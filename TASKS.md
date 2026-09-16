@@ -1,7 +1,7 @@
 # Project Roadmap & Task Tracking
 
 ## [ ] Phase 1: Foundation, Navigation & Security Hardening (CURRENT FOCUS)
-- [ ] **Dev Agent**: Setup Next.js App Router dengan proteksi Content Security Policy (CSP) awal di `next.config.js`. <!-- @backend -->
+- [x] **Dev Agent**: Setup Next.js App Router dengan proteksi Content Security Policy (CSP) awal di `next.config.ts`. <!-- @backend --> (Selesai: CSP strict + security headers, build EXIT=0, header terverifikasi runtime)
 - [x] **UI/UX Agent**: Design responsive Navbar layout utilizing Shadcn UI & Motion (React Bits) animation. <!-- @ui-ux --> (Selesai: Charcoal #0B0F19 bg, Emerald accent, hamburger slide-in drawer, SSR-visible, zero lint errors)
 - [x] **Security Agent**: Jalankan audit dependensi perdana (`npm audit`), kunci file lock, dan pastikan tidak ada pustaka luar yang rentan (*vulnerable dependencies*). <!-- @security --> (Selesai: 3 kerentanan ditutup → `npm audit` = 0 vulnerabilities, next→16.3.5)
 - [ ] **QA Agent**: Test hamburger menu responsiveness on iOS/Android devices and verify zero broken links. <!-- @qa -->
