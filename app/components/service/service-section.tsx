@@ -1,6 +1,7 @@
 import { OrderRoadmap } from "./order-roadmap";
 import { OrderTracking } from "./order-tracking";
 import { Certifications } from "./certifications";
+import { AffiliateFlags } from "./affiliate-flags";
 import { Separator } from "@/components/ui/separator";
 
 /**

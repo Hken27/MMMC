@@ -105,11 +105,60 @@
   - Test seluruh dokumen dari `assets/doc` yang relevan digunakan. ✅ (ISO.pdf)
   - Test setiap sertifikasi/dokumen dapat dibuka pada new tab. ✅ (ISO.pdf target=_blank noopener)
   - Pastikan tidak ada broken asset atau broken link. ✅ (ISO.pdf 200)
-  - pastikan kembali Company Certifications dan Flags negara afiliasi sudah menjadi carousel cards berlawanan (company ke kiri, flag ke kanan).
   - Jalankan build dan lint untuk memastikan tidak ada regresi. ✅ (build EXIT=0, lint clean, 5 suite pass)
 
-
-## [ ] Phase 5: Kontak
+## [ ] Phase 5: Final Revisi
+- [ ] **UI/UX & Dev Agent**: Finalisasi bagian Service dan Product dengan fokus pada **Company Certifications, Country Flags, dan Product Images**. <!-- @ui-ux @dev -->
+  - [- **Company Certifications**:
+    - Ubah tampilan certification cards menjadi **auto-moving horizontal carousel**.
+    - Carousel bergerak **otomatis dan terus-menerus ke arah samping secara smooth**.
+    - **Tidak menggunakan tombol next/previous, arrow, atau membutuhkan klik untuk menggerakkan carousel.**
+    - User cukup melihat carousel berjalan secara otomatis.
+    - Pertahankan fungsi klik pada certification card untuk membuka dokumen sertifikasi pada **new tab** seperti implementasi Phase 4.
+    - Jangan mengubah atau menghilangkan dokumen sertifikasi yang sudah digunakan.
+  - [- **Country Flags**:
+    - Pastikan juga **auto-moving horizontal carousel** untuk flags negara afiliasi.
+    - Carousel bergerak **otomatis, smooth, dan terus-menerus ke arah samping** tanpa interaksi klik.
+    - Posisi Country Flags berada **di bawah Company Certifications**.
+    - Gunakan data negara:
+      - USA
+      - China
+      - Arab
+      - German
+      - Perancis
+      - Iran
+      - Iraq
+      - Korea Selatan
+      - Jepang
+    - Tampilkan flag dengan ukuran dan spacing yang konsisten.
+    - Pastikan carousel tidak menyebabkan horizontal page overflow.
+  - [- **Product Images**:
+    - Ganti gambar produk yang saat ini digunakan dengan **asset produk asli** yang telah disediakan pada: `components/assets/prodak`
+    - Periksa seluruh file dalam folder tersebut terlebih dahulu.
+    - Cocokkan setiap asset dengan produk yang sesuai berdasarkan nama/konteks file.
+    - Contoh: asset dengan nama yang mengarah ke **BBQ Charcoal** digunakan untuk produk BBQ.
+    - Sesuaikan ukuran, aspect ratio, object-fit, dan styling gambar agar tetap proporsional dengan layout card yang sudah ada.
+    - Jangan mengubah informasi, kalkulator, tombol, atau fungsi produk yang sudah selesai pada Phase sebelumnya.
+    - Jangan membuat gambar placeholder baru jika asset yang sesuai sudah tersedia.
+  - [- **Design & Interaction**:
+    - Pertahankan design system dan visual website yang sudah ada.
+    - Gunakan animasi yang ringan dan smooth.
+    - Jangan menggunakan carousel yang membutuhkan user interaction untuk melakukan perpindahan slide.
+    - Pastikan animasi tidak mengganggu readability atau usability.
+    - Hormati `prefers-reduced-motion` apabila memungkinkan tanpa mengubah fungsi utama.
+    - Jangan melakukan redesign bagian lain di luar scope Phase 5.
+- [ ] **QA Agent**: Lakukan QA khusus pada **Company Certifications, Country Flags, dan Product Images**. <!-- @qa -->
+  - Pastikan certification carousel bergerak otomatis dan smooth.
+  - Pastikan flags carousel bergerak otomatis dan smooth.
+  - Pastikan tidak ada tombol/klik yang diperlukan untuk menggerakkan carousel.
+  - Pastikan certification card tetap dapat diklik untuk membuka dokumen pada new tab.
+  - Pastikan seluruh flag negara ditampilkan.
+  - Pastikan seluruh product card menggunakan asset dari `components/assets/prodak`.
+  - Pastikan tidak ada broken image atau missing asset.
+  - Pastikan tidak terjadi horizontal page overflow.
+  - Test responsive pada mobile, tablet, dan desktop.
+  - Pastikan perubahan tidak merusak fitur Phase 4 dan Phase 3.
+  - Jalankan build dan lint setelah perubahan.
 
 ## [ ] Phase 6: Globalization & Authentication (Dinamis)
 - [ ] **Dev Agent**: Setup i18n localization framework dan konfigurasi skema PostgreSQL.
