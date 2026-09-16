@@ -14,4 +14,3 @@
 - **Content Security Policy (CSP)**: Konfigurasi CSP strict pada `next.config.js` untuk membatasi eksekusi skrip JavaScript hanya dari domain tepercaya (menghalau injeksi malware XSS).
 - **Environment Isolation**: Kredensial DB PostgreSQL dan API Keys wajib menggunakan variabel lingkungan (`.env.local`) yang terdaftar di `.gitignore`.
 - **Session Protection**: Token login wajib disimpan dalam Cookie berstatus `httpOnly`, `Secure`, dan `SameSite=Strict`.
--

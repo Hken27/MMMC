@@ -59,9 +59,9 @@ export function NavbarMobileMenu({
               key={link.href}
               href={link.href}
               onClick={onClose}
-              aria-current={link.active || isActive(link.href) ? "page" : undefined}
+              aria-current={isActive(link.href) ? "page" : undefined}
               className={`rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
-                link.active || isActive(link.href)
+                isActive(link.href)
                   ? "bg-surface-hover text-accent"
                   : "text-foreground/70 hover:text-foreground hover:bg-surface-hover"
               }`}

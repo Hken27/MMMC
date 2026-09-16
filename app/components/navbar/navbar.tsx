@@ -2,20 +2,18 @@ import Link from "next/link";
 import { NavbarClient } from "./navbar-client";
 
 /**
- * Navbar — RSC wrapper (server component).
- * Nav config hidup di sini; interaksi (hamburger, dropdown)
- * dipindah ke client component di bawah.
- *
- * Strategic: default server-render = SEO-friendly (SSR crawler
- * melihat semua link), progressive enhancement untuk interaksi.
+ * Navbar — server component wrapper.
+ * Single-page website: semua navigasi pakai anchor links (#section),
+ * bukan route-based. NavbarClient handle IntersectionObserver untuk
+ * active section + smooth scroll behavior.
  */
-export type NavLink = { label: string; href: string; active?: boolean };
+export type NavLink = { label: string; href: string };
 
 export const NAV_LINKS: NavLink[] = [
-  { label: "Beranda", href: "/", active: true },
-  { label: "Produk", href: "/produk" },
-  { label: "Service", href: "/service" },
-  { label: "Kontak", href: "/kontak" },
+  { label: "Beranda", href: "#home" },
+  { label: "Produk", href: "#produk" },
+  { label: "Service", href: "#service" },
+  { label: "Kontak", href: "#kontak" },
 ];
 
 export function Navbar() {
@@ -32,25 +30,7 @@ export function Navbar() {
         <span className="text-accent">C</span>MMM
       </Link>
 
-      {/* Desktop links — inline markup, RSC */}
-      <div className="hidden items-center gap-1 md:flex">
-        {NAV_LINKS.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            aria-current={link.active ? "page" : undefined}
-            className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              link.active
-                ? "text-accent"
-                : "text-foreground/70 hover:text-foreground hover:bg-surface-hover"
-            }`}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </div>
-
-      {/* Right actions + hamburger — client component (language, login, mobile menu) */}
+      {/* Links (tengah) + actions (kanan) — client component */}
       <NavbarClient />
     </nav>
   );

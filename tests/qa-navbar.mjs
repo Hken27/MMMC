@@ -18,8 +18,8 @@ async function runViewport(browser, viewport) {
   const hamburger = await page.$('button[aria-label="Buka menu"], button[aria-label="Tutup menu"]');
   const hamburgerVisible = hamburger ? await hamburger.isVisible() : false;
 
-  // 2. Desktop nav links visibility
-  const desktopNav = await page.$('nav[aria-label="Navigasi utama"] a[href="/produk"]');
+  // 2. Desktop nav links visibility (single-page: anchor #produk)
+  const desktopNav = await page.$('nav[aria-label="Navigasi utama"] a[href="#produk"]');
   const desktopVisible = desktopNav ? await desktopNav.isVisible() : false;
 
   // 3. Brand present
@@ -37,10 +37,10 @@ async function runViewport(browser, viewport) {
     drawerVisible = drawer ? await drawer.isVisible() : false;
   }
 
-  // 5. Drawer links navigable
+  // 5. Drawer links navigable (single-page: anchor #produk)
   let drawerLinkOk = false;
   if (isMobile && drawerVisible) {
-    const dl = await page.$('div[role="dialog"] a[href="/produk"]');
+    const dl = await page.$('div[role="dialog"] a[href="#produk"]');
     drawerLinkOk = dl ? await dl.isVisible() : false;
   }
 

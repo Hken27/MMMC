@@ -1,0 +1,12 @@
+import { chromium } from "playwright";
+const browser = await chromium.launch({ headless: true });
+const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
+await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
+const svc = page.locator("#service");
+await svc.scrollIntoViewIfNeeded();
+await page.waitForTimeout(500);
+const h4s = await svc.locator("h4").allTextContents();
+console.log("h4 in #service:", JSON.stringify(h4s));
+const h3s = await svc.locator("h3").allTextContents();
+console.log("h3 in #service:", JSON.stringify(h3s));
+await browser.close();
