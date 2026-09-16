@@ -105,6 +105,7 @@
   - Test seluruh dokumen dari `assets/doc` yang relevan digunakan. ✅ (ISO.pdf)
   - Test setiap sertifikasi/dokumen dapat dibuka pada new tab. ✅ (ISO.pdf target=_blank noopener)
   - Pastikan tidak ada broken asset atau broken link. ✅ (ISO.pdf 200)
+  - pastikan kembali Company Certifications dan Flags negara afiliasi sudah menjadi carousel cards berlawanan (company ke kiri, flag ke kanan).
   - Jalankan build dan lint untuk memastikan tidak ada regresi. ✅ (build EXIT=0, lint clean, 5 suite pass)
 
 
