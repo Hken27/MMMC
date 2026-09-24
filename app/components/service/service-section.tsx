@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 
 /**
  * ServiceSection — #service (single-page home section).
- * Terdiri dari: Order Roadmap + Order Tracking + Company Certifications.
+ * Terdiri dari: Order Roadmap + Order Tracking + Company Certifications + Affiliate Flags.
  */
 export function ServiceSection() {
   return (
@@ -39,6 +39,11 @@ export function ServiceSection() {
 
         {/* 3. Company Certifications */}
         <Certifications />
+
+        <Separator className="my-14 bg-border/40" />
+
+        {/* 4. Affiliate Flags */}
+        <AffiliateFlags />
       </div>
     </section>
   );

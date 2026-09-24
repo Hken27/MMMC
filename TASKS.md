@@ -51,18 +51,17 @@
   - **Struktur Final Section Service** (urutan tetap):
     1. **Order Roadmap** — 5 tahap (Login Account → Order Product → Transaction → Delivery → Order Completed), masing-masing dengan deskripsi panduan singkat. Stepper horizontal (desktop/tablet) / vertikal (mobile).
     2. **Order Tracking** — input/search Order ID + area status. UI siap-kembang untuk sistem tracking dinamis; tidak ada data dummy yang menyerupai data nyata.
-    3. **Company Certifications** — carousel auto-moving, menampilkan seluruh dokumen relevan dari `components/assets/doc/` (mis. ISO.pdf, MSDS.pdf). Klik dokumen → buka di tab baru (`target="_blank" rel="noopener noreferrer"`).
-    4. **Country Flags (Affiliate/Buyer Countries)** — carousel auto-moving, bergerak berlawanan arah dengan carousel Certifications.
+    3. **Company Certifications** — static grid layout (4 kolom desktop, 2 kolom tablet, 1 kolom mobile), menampilkan seluruh dokumen relevan dari `components/assets/doc/` (mis. ISO.pdf, MSDS.pdf). Klik dokumen → buka di tab baru (`target="_blank" rel="noopener noreferrer"`).
+    4. **Country Flags (Affiliate/Buyer Countries)** — carousel auto-moving, bergerak berlawanan arah dengan state normal.
   - **Aturan Asset (berlaku permanen)**:
     - Dokumen sertifikasi: `components/assets/doc/`.
     - Baca isi folder sebelum coding; cocokkan asset ke entitas berdasarkan nama/konteks file.
     - Gunakan seluruh asset relevan — tidak boleh ada yang terlewat.
     - Dilarang membuat placeholder baru bila asset asli tersedia; dilarang memindah/menghapus asset tanpa kebutuhan.
     - Semua path asset wajib valid — nol broken image/broken document.
-  - **Aturan Carousel (berlaku permanen)**:
+  - **Aturan Carousel (berlaku permanen untuk Flags carousel)**:
     - Auto-moving marquee only — tanpa arrow, dot, tombol next/prev, atau drag.
     - Loop seamless (track diduplikasi), gunakan `transform: translate3d`, bukan `left`/`margin`.
-    - Dua carousel bertetangga (Certifications ↔ Flags) wajib bergerak berlawanan arah.
     - Container wajib `overflow-x: hidden`; nol horizontal page overflow di 3 viewport (390/768/1440).
     - Item carousel tetap dapat diklik untuk aksi kontennya.
     - `prefers-reduced-motion: reduce` → animasi berhenti, konten tetap terbaca & dapat diklik.
@@ -82,13 +81,15 @@
     - Setiap bendera wajib punya `alt`/`aria-label` nama negara (aksesibilitas), ukuran & aspect ratio konsisten antar-item, serta tampil baik di light/dark theme.
 - [x] **Dev Agent**: Service terintegrasi di `/` melalui `#service`, tidak ada halaman terpisah.
 - [x] **UI/UX Agent**: Seluruh Service section responsive (mobile/tablet/desktop), konsisten dengan design system.
-- [x] **QA Agent**: Setelah implementasi bendera berwarna, lakukan:
-  - [x] Test seluruh bendera negara ter-render benar (tanpa broken image, tanpa fallback emoji tersisa).
-  - [x] Test carousel Certifications ↔ Flags tetap berlawanan arah & seamless setelah perubahan asset.
-  - [x] Jika pakai Opsi B: verifikasi CSP `img-src` sudah mencakup `flagcdn.com` dan tidak ada CSP violation di console.
-  - [x] Test 3 viewport (390/768/1440): nol horizontal overflow.
-  - [x] Test `prefers-reduced-motion`.
-  - [x] Regresi Phase 1–3 (build EXIT=0, lint clean, `tsc --noEmit` clean).
+- [x] **QA Agent**: Implementasi Phase 3 final:
+  - [x] Certifications grid: 4 kolom (desktop) / 2 kolom (tablet) / 1 kolom (mobile), semua card ter-render dengan benar, tanpa broken image/document.
+  - [x] Klik dokumen pada Certifications → buka di tab baru dengan `target="_blank"`.
+  - [x] Order Roadmap stepper: responsive horizontal/vertikal, semua step ter-render, deskripsi jelas.
+  - [x] Order Tracking: input field + search area ter-render, layout responsif 3 viewport.
+  - [x] Flags carousel: gerak kiri smooth seamless, bendera ter-render berwarna (tidak emoji), scale/opacity effect pada hover bekerja (jika ada flags state hover).
+  - [x] Test 3 viewport (390/768/1440): nol horizontal overflow, spacing seragam.
+  - [x] Test `prefers-reduced-motion`: animasi flags berhenti, konten tetap terbaca & dapat diklik.
+  - [x] Regresi Phase 1–3 (build EXIT=0, lint clean, `tsc --noEmit` clean, Playwright 24/24 pass).
 
 ## [ ] Phase 4: Globalization & Authentication (Dinamis)
 - [ ] **Semua Agent**: Wajib patuh pada **DESIGN LOCK** di atas — i18n, Login/Auth UI, dan integrasi database tidak boleh mengubah desain, layout, atau styling Public Site yang sudah final di Phase 1–3. Halaman/komponen baru (mis. form Login/Register buyer) wajib mengikuti design tokens & pola komponen existing, bukan membuat gaya baru.

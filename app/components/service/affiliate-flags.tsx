@@ -6,7 +6,7 @@ import { Globe2 } from "lucide-react";
 
 /**
  * AffiliateFlags — auto-scroll marquee (seamless loop, tanpa buttons).
- * Arah: KIRI (berlawanan dengan Certifications yang KANAN).
+ * Arah: KIRI.
  * Pure animation-based carousel menggunakan `transform: translate3d`.
  * Bendera negara: flagcdn.com SVG (Opsi B - REST API).
  */
@@ -21,10 +21,14 @@ const AFFILIATE_COUNTRIES = [
   { name: "Korea Selatan", code: "KR" },
 ];
 
-const CARD_WIDTH = 170; // px (incl gap)
+const CARD_WIDTH = 158; // 170 - 12 (incl gap di flex)
 
 export function AffiliateFlags() {
   const trackRef = useRef<HTMLDivElement>(null);
+  const animStateRef = useRef({
+    position: 0,
+    lastTime: Date.now(),
+  });
 
   useEffect(() => {
     const track = trackRef.current;
@@ -32,35 +36,37 @@ export function AffiliateFlags() {
 
     // Setup: duplikasi cards untuk seamless loop
     const cards = track.querySelectorAll(".flag-card");
+    const originalCount = cards.length;
     cards.forEach((card) => {
       const clone = card.cloneNode(true) as HTMLElement;
       track.appendChild(clone);
     });
 
+    // Total width = original cards + clones
+    const totalCardWidth = CARD_WIDTH * originalCount;
+
     // Prefersnya reduced motion
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return; // Jangan animasi kalau user prefer reduce
+    if (prefersReduced) return;
 
-    let position = 0;
-    const speed = 25; // pixels per second (sedikit lebih lambat dari certs)
-    let lastTime = Date.now();
+    const speed = 25; // pixels per second
     let animId: number;
 
     function animate() {
       const now = Date.now();
-      const delta = (now - lastTime) / 1000;
-      lastTime = now;
+      const delta = (now - animStateRef.current.lastTime) / 1000;
+      animStateRef.current.lastTime = now;
 
       // Gerak KIRI (negative direction)
-      position -= speed * delta;
+      animStateRef.current.position -= speed * delta;
 
-      // Reset ke awal saat halfway (seamless loop)
-      if (position <= -CARD_WIDTH * AFFILIATE_COUNTRIES.length) {
-        position = 0;
+      // Seamless reset: ketika reach halfway (original cards selesai), reset ke 0
+      if (animStateRef.current.position <= -totalCardWidth) {
+        animStateRef.current.position = 0;
       }
 
       if (track) {
-        track.style.transform = `translate3d(${position}px, 0, 0)`;
+        track.style.transform = `translate3d(${animStateRef.current.position}px, 0, 0)`;
       }
       animId = requestAnimationFrame(animate);
     }
@@ -93,7 +99,13 @@ export function AffiliateFlags() {
           }}
         >
           {AFFILIATE_COUNTRIES.map((c) => (
-            <div key={c.code} className="flag-card" style={{ width: CARD_WIDTH - 12 }}>
+            <div
+              key={c.code}
+              className="flag-card flex-shrink-0"
+              style={{
+                width: CARD_WIDTH,
+              }}
+            >
               <div className="flex flex-col items-center gap-1.5 rounded-lg border border-border/50 bg-surface/60 px-4 py-3">
                 <div className="relative h-12 w-16 overflow-hidden rounded-md bg-muted">
                   <Image

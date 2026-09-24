@@ -1,13 +1,10 @@
 "use client";
 
-import { useRef } from "react";
-import { FileText, ExternalLink, Award, ShieldCheck, ChevronLeft, ChevronRight } from "lucide-react";
+import { FileText, ExternalLink, Award, ShieldCheck } from "lucide-react";
 
 /**
- * Certifications — carousel card sertifikasi perusahaan + badge standar.
- * Horizontal scroll container dengan tombol prev/next (native scroll-behavior smooth).
- * ISO.pdf asli dari assets/doc (disalin ke public/documents/).
- * Klik → open new tab aman.
+ * Certifications — static grid layout (tanpa carousel).
+ * Menampilkan seluruh sertifikasi dalam grid responsif.
  */
 
 type Cert = {
@@ -15,7 +12,7 @@ type Cert = {
   name: string;
   description: string;
   href: string;
-  hasFile: boolean; // true = ada file asli, false = badge standar
+  hasFile: boolean;
   icon: "iso" | "msds" | "coo" | "fumigasi";
 };
 
@@ -32,8 +29,8 @@ const CERTS: Cert[] = [
     id: "msds",
     name: "MSDS",
     description: "Material Safety Data Sheet — keamanan material produk untuk ekspor.",
-    href: "#",
-    hasFile: false,
+    href: "/documents/MSDS.pdf",
+    hasFile: true,
     icon: "msds",
   },
   {
@@ -54,16 +51,7 @@ const CERTS: Cert[] = [
   },
 ];
 
-/** Lebar kartu — visibel sebagian (margin) agar jelas carousel-nya. */
-const CARD_WIDTH = 260;
-
 export function Certifications() {
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  function scrollBy(dir: 1 | -1) {
-    trackRef.current?.scrollBy({ left: dir * CARD_WIDTH * 1.5, behavior: "smooth" });
-  }
-
   return (
     <div>
       {/* Header */}
@@ -80,43 +68,12 @@ export function Certifications() {
         </p>
       </div>
 
-      {/* Carousel */}
-      <div className="relative">
-        {/* Track — horizontal scroll snap */}
-        <div
-          ref={trackRef}
-          className="carousel-track flex gap-4 overflow-x-auto scroll-smooth pb-2 snap-x snap-mandatory"
-        >
-          {CERTS.map((cert) => (
-            <div key={cert.id} className="snap-start" style={{ width: CARD_WIDTH }}>
-              <CertCard cert={cert} />
-            </div>
-          ))}
-        </div>
-
-        {/* Nav arrows — hidden */}
-        <button
-          type="button"
-          onClick={() => scrollBy(-1)}
-          aria-label="Sertifikasi sebelumnya"
-          className="absolute -left-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background text-foreground/70 shadow-sm transition-colors hover:border-accent/40 hover:text-accent sm:flex"
-        >
-          <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollBy(1)}
-          aria-label="Sertifikasi berikutnya"
-          className="absolute -right-4 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background text-foreground/70 shadow-sm transition-colors hover:border-accent/40 hover:text-accent sm:flex"
-        >
-          <ChevronRight className="h-5 w-5" aria-hidden="true" />
-        </button>
+      {/* Static grid */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {CERTS.map((cert) => (
+          <CertCard key={cert.id} cert={cert} />
+        ))}
       </div>
-
-      {/* Hint swipe mobile */}
-      <p className="mt-3 text-center text-xs text-muted-foreground/60 sm:hidden">
-        Geser ke samping untuk melihat semua sertifikasi
-      </p>
     </div>
   );
 }
@@ -127,9 +84,10 @@ function CertCard({ cert }: { cert: Cert }) {
   return (
     <a
       href={cert.href}
-      target="_blank"
+      target={isAvailable ? "_blank" : undefined}
       rel={isAvailable ? "noopener noreferrer" : undefined}
-      className={`group flex h-full flex-col items-center gap-3 rounded-2xl border border-border/50 bg-card p-5 text-center transition-all ${
+      onClick={(e) => !isAvailable && e.preventDefault()}
+      className={`group pointer-events-auto flex h-full flex-col items-center gap-3 rounded-2xl border border-border/50 bg-card p-5 text-center transition-all ${
         isAvailable
           ? "cursor-pointer hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5"
           : "cursor-default opacity-70"

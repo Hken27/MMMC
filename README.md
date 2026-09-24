@@ -102,5 +102,4 @@ Claude Code should be used to:
 
 The primary instructions for Claude Code are defined in:
 
-```text
 CLAUDE.md

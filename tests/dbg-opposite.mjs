@@ -9,7 +9,7 @@ const cert = page.locator('section#service [role="region"][aria-label*="Sert"]')
 const flags = page.locator('section#service [role="region"][aria-label*="Negar"]').first();
 await page.evaluate(() => document.querySelectorAll("section#service [role='region']").forEach(el=>el.scrollIntoView()));
 
-await page.waitForTimeout(400溯?) wait no I never scroll into one viewport? need both visible; #service panjang → carousel cert di atas flags (keduanya dalam section yg sama, layar 1280x800):
+await page.waitForTimeout(400); // wait no I never scroll into one viewport? need both visible; #service panjang → carousel cert di atas flags (keduanya dalam section yg sama, layar 1280x800):
 const certBox = await cert.boundingBox();
 const flagsBox = await flags.boundingBox();
 console.log("cert box:", certBox && Math.round(certBox.y), "flags box:", flagsBox && Math.round(flagsBox.y));
