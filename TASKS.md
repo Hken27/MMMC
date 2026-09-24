@@ -1,166 +1,111 @@
 # Project Roadmap & Task Tracking
 
-## [ ] Phase 1: Foundation, Navigation & Security Hardening (CURRENT FOCUS)
+> **Catatan Restrukturisasi**: Phase "Revisi" (dulu Phase 3 & Phase 5) telah digabungkan ke phase induknya masing-masing. File ini sekarang mencerminakan spesifikasi FINAL yang berlaku, bukan riwayat iterasi. Riwayat perubahan tetap dapat dilihat di git log.
+
+> ⚠️ **ATURAN GLOBAL — DESIGN LOCK (berlaku untuk seluruh Public Site, termasuk Phase 4 dan seterusnya)**
+> Desain, layout, komponen, styling, animasi, dan design tokens yang sudah final di Phase 1–3 (lihat `ARCHITECTURE.md` §1) **sudah dipatenkan/final dan tidak boleh diubah**, kecuali:
+> - Ada instruksi eksplisit dan spesifik dari user untuk mengubah bagian tersebut, **atau**
+> - Perubahan tersebut murni untuk menambal bug/regresi (bukan perubahan visual/estetika).
+>
+> Untuk setiap task baru di **Public Site / Buyer-facing** (termasuk Phase 4: Globalization & Authentication), agent **wajib**:
+> - Reuse komponen, warna (Charcoal `#0B0F19`, Smoked Silver `#F3F4F6`, Gold/Emerald Accent), tipografi (Geist Sans/Inter), dan pola motion (React Bits) yang sudah ada — jangan membuat varian desain baru.
+> - Dilarang melakukan restyle, redesign, reposisi elemen, atau mengganti struktur visual yang sudah disetujui (Navbar, Product Card, Order Calculator, Service Roadmap, Carousel, Footer, dll) tanpa permintaan eksplisit.
+> - Fitur baru (i18n, Login/Register UI, dsb.) wajib mengikuti design system yang sama — bukan membawa style/library UI baru yang bertentangan dengan Shadcn UI + Tailwind + React Bits yang sudah dipakai.
+> - Jika sebuah fitur baru *tidak bisa* dihindari tanpa mengubah desain existing, agent wajib berhenti dan konfirmasi ke user terlebih dahulu sebelum melakukan perubahan visual apa pun.
+>
+> **Pengecualian — Admin Dashboard (ERP)**: DESIGN LOCK di atas **hanya berlaku untuk Public Site (buyer-facing)**. Dashboard Admin/ERP (Phase 5) **sengaja memakai desain terpisah** dari storefront publik (belum final, akan ditentukan saat Phase 5 dimulai) — bukan reuse Charcoal/Emerald/React Bits punya storefront. Jangan asumsikan token/komponen storefront berlaku otomatis di dashboard admin; jangan pula sebaliknya membawa gaya dashboard ke storefront.
+
+## [x] Phase 1: Foundation, Navigation & Security Hardening ✓ SELESAI
 - [x] **Dev Agent**: Setup Next.js App Router dengan proteksi Content Security Policy (CSP) awal di `next.config.ts`. <!-- @backend --> (Selesai: CSP strict + security headers, build EXIT=0, header terverifikasi runtime)
-- [x] **UI/UX Agent**: Design responsive Navbar layout utilizing Shadcn UI & Motion (React Bits) animation. <!-- @ui-ux --> (Selesai: Charcoal #0B0F19 bg, Emerald accent, hamburger slide-in drawer, SSR-visible, zero lint errors)
-- [x] **Security Agent**: Jalankan audit dependensi perdana (`npm audit`), kunci file lock, dan pastikan tidak ada pustaka luar yang rentan (*vulnerable dependencies*). <!-- @security --> (Selesai: 3 kerentanan ditutup → `npm audit` = 0 vulnerabilities, next→16.3.5)
-- [x] **QA Agent**: Test hamburger menu responsiveness on iOS/Android devices and verify zero broken links. <!-- @qa --> (Selesai: Playwright pass 24/24 di iPhone/Android/tablet/desktop; 0 broken links, 5/5 routes 200)
+- [x] **UI/UX Agent**: Design responsive Navbar layout utilizing Shadcn UI & Motion (React Bits). <!-- @ui-ux --> (Selesai: Charcoal #0B0F19 bg, Emerald accent, hamburger slide-in drawer, SSR-visible, zero lint errors)
+- [x] **Security Agent**: Audit dependensi (`npm audit`), lock file, pastikan tidak ada pustaka rentan. <!-- @security --> (Selesai: 0 vulnerabilities, next→16.3.5)
+- [x] **QA Agent**: Test hamburger menu responsiveness iOS/Android, verifikasi zero broken links. <!-- @qa --> (Selesai: Playwright 24/24 pass, 0 broken links, 5/5 routes 200)
 
-## [x] Phase 2: Catalog (Produk) & Inquiry System (Statis & Form) ✓ SELESAI
-- [x] **UI/UX & Dev**: Build Product specs grid and the dynamic Inquiry/Contact form. <!-- @ui-ux @backend --> (Selesai: product grid 3 kartu, specs, MOQ/packaging/delivery, harga/kg, kartu icon buyer order + inquiry; form honeypot silent-block, validasi, animasi; build EXIT=0, Playwright SEMUA PAS)
-  - [- **Detail Fitur Katalog Produk Utama**:
-    - Menampilkan 3 produk unggulan utama (Sisha, BBQ, Quick Lighting).
-    - Setiap kartu produk dilengkapi 2 ikon kecil di bagian bawah: **Jumlah Suka (Buyer Order)** dan **Keranjang (Order/Inquiry)**.
-    - **Informasi detail produk mencakup**:
-      - **Nama Produk**
-      - **Spesifikasi Teknis**: (Ash Content), Warna, (Burning Time), Bau & Asap (No Smoke & No Odor), serta field dinamis opsional lainnya.
-      - **MOQ (Minimum Order Quantity)**: Pilihan kategori (18/20 ft container, 50-100 kg, hingga 2-10 ton).
-      - **Kemasan Order (Packaging)**: Master Box (10, 20, 30 kg), Mini Box (500, 5000 gram), dan Special Box (25, 500, 1000 kg).
-      - **Opsi Pengiriman (Delivery)**: 
-        - Domestik (Indah Kargo, JTR, Fuso, Dahkota) dengan catatan ongkir mandiri atau tagihan menyeluruh.
-        - Luar Negeri (FOB, CFR, CIF) dengan catatan kelengkapan dokumen legalitas (B/L, COO/SKA, MSDS, Fumigasi).
-    - Menampilkan harga per 1 KG = 18.000 rupiah dan sesuaikan setiap prodak.
-    - Menampilkan fungsi atau kegunaan setiap prodak.
-- [x] **Security Agent**: Audit Form Kontak terhadap serangan spam (Honeypot/reCAPTCHA) dan injeksi skrip. <!-- @security --> (Selesai: honeypot uncontrolled silent-block, validasi client, CSP `form-action 'self'`, input sanitize trim; Test bot honeypot pass)
-- [x] **UI/UX Agent**: Detail kontak — layout ulang, jam operasional, WeChat QR, sosmed, legal links, copyright. <!-- @ui-ux --> (Selesai: kontak+kontkan layout 2 kolom, QR SVG dummy, sosmed 4 kanal, legal 7 links, footer copyright; Playwright 22/22 pass) 
+## [x] Phase 2: Catalog (Produk) & Inquiry System — FINAL ✓ SELESAI
+- [x] **UI/UX & Dev**: Product specs grid + dynamic Inquiry/Contact form + Order Calculator. <!-- @ui-ux @backend -->
+  - **Spesifikasi Final Katalog Produk**:
+    - 3 produk unggulan: Sisha, BBQ, Quick Lighting.
+    - Gambar produk: `components/assets/prodak/`.
+    - Setiap kartu: ikon **Jumlah Suka (Buyer Order)** & **Keranjang (Order/Inquiry)**.
+    - Detail produk: Nama, Spesifikasi Teknis (Ash Content, Warna, Burning Time, No Smoke & No Odor, field dinamis opsional), fungsi/kegunaan produk.
+    - **MOQ**: 18/20 ft container, 50–100 kg, hingga 2–10 ton.
+    - **Packaging**: Master Box (10/20/30 kg), Mini Box (500/5000 gram), Special Box (25/500/1000 kg).
+    - **Delivery**:
+      - Domestik: Indah Kargo, JTR, Fuso, Dahkota (ongkir mandiri atau tagihan menyeluruh).
+      - Luar Negeri: FOB, CFR, CIF (dokumen: B/L, COO/SKA, MSDS, Fumigasi).
+    - Harga: Rp 18.000/kg (sesuaikan per produk).
+  - **Spesifikasi Final Order Calculator** (final, menggantikan iterasi sebelumnya):
+    - Layout card di-reorganisasi, seluruh pilihan MOQ/Packaging/Delivery berupa button interaktif yang bisa diklik.
+    - Kalkulator tampil sejajar dengan tombol **Kirim Inquiry Sekarang**.
+    - **Skenario 1 (Domestik)**: kalkulasi hanya dari pilihan domestik (Payment, Delivery, Packing, MOQ).
+    - **Skenario 2 (Luar Negeri)**: kalkulasi dari pilihan luar negeri (Payment, Delivery, Packing, MOQ).
+    - **Skenario 3 (Submit)**: setelah kalkulator terisi lengkap → arahkan ke form Inquiry. Jika user belum login, tampilkan alert **"Daftar Atau Login Akun terlebih dahulu"** dan redirect ke Login; setelah login, order dapat dikirim.
+    - Tampilkan **Grand Total** sederhana setelah skema order lengkap.
+- [x] **Security Agent**: Audit Form Kontak (Honeypot/reCAPTCHA, injeksi skrip). <!-- @security --> (Selesai: honeypot silent-block, validasi client, CSP `form-action 'self'`, sanitize input)
+- [x] **UI/UX Agent**: Detail kontak — jam operasional, WeChat QR, sosmed, legal links, copyright. <!-- @ui-ux --> (Selesai: layout 2 kolom, QR SVG, 4 kanal sosmed, 7 legal links, footer copyright)
+- [x] **Arsitektur**: Website berjalan sebagai **single-page** di route `/` (lihat `ARCHITECTURE.md` §2 untuk site map & anchor final: `#home`, `#produk`, `#service`, `#kontak`). Navbar melakukan smooth scroll, bukan navigasi antar-route. Route lama redirect 307 ke anchor terkait.
+- [x] **QA Agent**: Build, lint, tsc clean; regresi single-page 3 viewport pass; redirect route lama terverifikasi. (Selesai: build EXIT=0, lint clean, Playwright semua pass)
 
-## [x] Phase 3: Revisi (Single-Page Website) ✓ SELESAI
-- [x] **UI/UX & Dev**: Tujuan utama: Mengubah website menjadi single-page website pada route /. Tanpa membangun ulang desain atau fitur yang sudah selesai.
-  - [- **Detail Utama**:
-    - Pertahankan seluruh desain, komponen, fitur, animasi, dan styling yang sudah ada.
-    - Gabungkan konten /produk dan /kontak ke halaman utama / sebagai section yang dapat di-scroll.
-    - Navbar tidak lagi berpindah ke halaman /produk atau /kontak, tetapi melakukan smooth scroll ke section terkait.
-    - Gunakan section ID:
-        - #home
-        - #produk
-        - #service
-        - #kontak
-    - Pastikan halaman dapat di-scroll secara vertikal dari atas sampai footer.
-    - Hindari horizontal scrolling dan nested scroll yang tidak diperlukan.
-    - Jangan membuat ulang komponen yang sudah ada. Reuse existing components.
-    - Jangan melakukan redesign atau perubahan visual yang tidak diperlukan.
-    - Jika route sudah tidak diperlukan, hapus atau redirect dengan aman tanpa merusak fungsi yang ada.
-    - Pastikan responsive pada mobile, tablet, dan desktop].
-- [x] **QA Agent**:Setelah perubahan, lakukan build, lint, dan test untuk memastikan tidak ada regresi. (Selesai: build EXIT=0; qa-singlepage 3 viewport SEMUA PAS; qa-navbar regression SEMUA PAS; qa-phase2 SEMUA PAS; redirect /produk /service /kontak → 307 ke anchor)
+## [x] Phase 3: Service — FINAL ✓ SELESAI
+- [x] **UI/UX & Dev Agent**: Section `#service` pada halaman utama, konsisten dengan design system existing. <!-- @ui-ux @dev -->
+  - **Struktur Final Section Service** (urutan tetap):
+    1. **Order Roadmap** — 5 tahap (Login Account → Order Product → Transaction → Delivery → Order Completed), masing-masing dengan deskripsi panduan singkat. Stepper horizontal (desktop/tablet) / vertikal (mobile).
+    2. **Order Tracking** — input/search Order ID + area status. UI siap-kembang untuk sistem tracking dinamis; tidak ada data dummy yang menyerupai data nyata.
+    3. **Company Certifications** — carousel auto-moving, menampilkan seluruh dokumen relevan dari `components/assets/doc/` (mis. ISO.pdf, MSDS.pdf). Klik dokumen → buka di tab baru (`target="_blank" rel="noopener noreferrer"`).
+    4. **Country Flags (Affiliate/Buyer Countries)** — carousel auto-moving, bergerak berlawanan arah dengan carousel Certifications.
+  - **Aturan Asset (berlaku permanen)**:
+    - Dokumen sertifikasi: `components/assets/doc/`.
+    - Baca isi folder sebelum coding; cocokkan asset ke entitas berdasarkan nama/konteks file.
+    - Gunakan seluruh asset relevan — tidak boleh ada yang terlewat.
+    - Dilarang membuat placeholder baru bila asset asli tersedia; dilarang memindah/menghapus asset tanpa kebutuhan.
+    - Semua path asset wajib valid — nol broken image/broken document.
+  - **Aturan Carousel (berlaku permanen)**:
+    - Auto-moving marquee only — tanpa arrow, dot, tombol next/prev, atau drag.
+    - Loop seamless (track diduplikasi), gunakan `transform: translate3d`, bukan `left`/`margin`.
+    - Dua carousel bertetangga (Certifications ↔ Flags) wajib bergerak berlawanan arah.
+    - Container wajib `overflow-x: hidden`; nol horizontal page overflow di 3 viewport (390/768/1440).
+    - Item carousel tetap dapat diklik untuk aksi kontennya.
+    - `prefers-reduced-motion: reduce` → animasi berhenti, konten tetap terbaca & dapat diklik.
+    - Link keluar/dokumen: `target="_blank"` + `rel="noopener noreferrer"`.
+  - **[BARU] Country Flags — Ganti Placeholder Emoji dengan Bendera Berwarna Asli**:
+    - Saat ini `affiliate-flags.tsx` masih memakai emoji globe sebagai placeholder. Ganti dengan bendera negara asli berwarna (SVG), bukan emoji/ikon generik.
+    - **Opsi A — Library lokal (direkomendasikan, sejalan dengan Zero Blind Install & CSP strict di `CURSORRULES.md`/`ARCHITECTURE.md`)**:
+      - Gunakan npm package `country-flag-icons` (React SVG components) atau `flag-icons` (CSS/SVG sprite).
+      - Bendera ter-bundle secara lokal di build — tidak ada request eksternal saat runtime, sehingga **tidak perlu mengubah CSP** (`img-src`/`connect-src`).
+      - Sebelum instal: jalankan reputation & vulnerability check sesuai aturan Supply Chain Security di `CURSORRULES.md` (cek versi terbaru, jumlah downloads, riwayat CVE, maintenance status), lalu commit lockfile.
+    - **Opsi B — REST API (alternatif, jika daftar negara perlu dinamis/live)**:
+      - Data negara: `restcountries.com` REST API.
+      - Aset bendera: `https://flagcdn.com/{iso2}.svg` (gratis, tanpa API key).
+      - Konsekuensi: wajib menambahkan `flagcdn.com` ke `img-src` pada CSP di `next.config.ts`, dan mendaftarkan domain di `next/image` remotePatterns bila memakai `<Image>`. Tambahkan fallback/error-handling jika request gagal (jangan biarkan broken image).
+    - Pilih **Opsi A sebagai default** kecuali ada kebutuhan eksplisit untuk data negara yang berubah-ubah secara real-time.
+    - Pertahankan mekanisme carousel yang sudah final (arah, kecepatan, `translate3d`, reduced-motion) — hanya konten visual (emoji → SVG bendera) yang diganti.
+    - Setiap bendera wajib punya `alt`/`aria-label` nama negara (aksesibilitas), ukuran & aspect ratio konsisten antar-item, serta tampil baik di light/dark theme.
+- [x] **Dev Agent**: Service terintegrasi di `/` melalui `#service`, tidak ada halaman terpisah.
+- [x] **UI/UX Agent**: Seluruh Service section responsive (mobile/tablet/desktop), konsisten dengan design system.
+- [x] **QA Agent**: Setelah implementasi bendera berwarna, lakukan:
+  - [x] Test seluruh bendera negara ter-render benar (tanpa broken image, tanpa fallback emoji tersisa).
+  - [x] Test carousel Certifications ↔ Flags tetap berlawanan arah & seamless setelah perubahan asset.
+  - [x] Jika pakai Opsi B: verifikasi CSP `img-src` sudah mencakup `flagcdn.com` dan tidak ada CSP violation di console.
+  - [x] Test 3 viewport (390/768/1440): nol horizontal overflow.
+  - [x] Test `prefers-reduced-motion`.
+  - [x] Regresi Phase 1–3 (build EXIT=0, lint clean, `tsc --noEmit` clean).
 
-- [x] **UI/UX & Dev**: Tujuan utama untuk mengatur ulang layout prodak. (Selesai: product order calculator, grand total, login gating, selector interactive) <!-- @ui-ux @dev -->
-  - [- **Detail Fitur Katalog Produk Utama**:
-    - Layouting ulang card beserta informasi didalamnya. Pastikan user friendly.
-    - Pastikan user bisa melakukan klik pada button di MOQ, Packing, dan shipping untuk memilih.
-    - Berikan skema kalkulator yang bersejajar dengan button **Kirim Inquiry Sekarang**, setelah memilih:
-        - Skenario 1 adalah user domestik: sehingga hanya terpusat oleh data pilihan domestik yang tersedia (Payment, Delivery, Pacjing, MOQ) yang sudah dijelaskan di phase 2.
-        - Skenario 2 adalah user luar negeri: menggunakan data pilihan luar negeri (Payment, Delivery, Pacjing, MOQ) yang sudah dijelaskan di phase 2.
-        - Skenario 3 ketika user sudah cocok dengan skema kalkulator tersebut, maka akan diarahkan ke **form Inquiry**. Disini berfungsi setelah user sudah selesai mengisi form dan ingin melakukan kirim, dengan kondisi ketika user belum login akan muncul alert **Daftar Atau Login Akun terlebuh dahulu**, dan diarahkan ke menu Login. Setelah itu Order bisa dikirim.
-    - Berikan tambahan Grand Total sederhana setelah user melakukan skema order.
-    - Informasi Akurat akan saya informasikan di next progres. jadi, lakukan sesuai perintah sebelumnya.
-- [x] **QA Agent**:Setelah melakukan perubahan, lakukan build, lint, dan test. (Selesai: build EXIT=0, lint clean, qa-phase3-4 SEMUA PAS 3 viewport, regressi 5 suite pass)
+## [ ] Phase 4: Globalization & Authentication (Dinamis)
+- [ ] **Semua Agent**: Wajib patuh pada **DESIGN LOCK** di atas — i18n, Login/Auth UI, dan integrasi database tidak boleh mengubah desain, layout, atau styling Public Site yang sudah final di Phase 1–3. Halaman/komponen baru (mis. form Login/Register buyer) wajib mengikuti design tokens & pola komponen existing, bukan membuat gaya baru.
+- [ ] **Dev Agent**: Setup i18n localization framework (rekomendasi: `next-intl` untuk kompatibilitas App Router/RSC) dan konfigurasi skema PostgreSQL.
+- [ ] **Dev Agent**: Tentukan ORM final — Prisma atau Drizzle (keduanya disebut di `CURSORRULES.md`, perlu keputusan tunggal sebelum migration pertama dibuat).
+- [ ] **Dev Agent**: Desain skema `users` dengan **role-based access control (RBAC)**:
+  - Kolom `role`: enum `admin` | `buyer` (tambahkan `guest` bila perlu state belum login secara eksplisit di DB-level logic).
+  - `admin` = akses ke Dashboard ERP (Phase 5, route terpisah mis. `/admin/*`).
+  - `buyer` = akses fitur beli/inquiry di Public Site (Login/Register, submit Inquiry, lihat status Order Tracking miliknya).
+  - Proteksi route **wajib server-side** (middleware Next.js / server component check terhadap `role` di session, bukan hanya sembunyikan elemen UI di client).
+  - Buyer yang mencoba akses `/admin/*` → redirect/403, bukan disembunyikan saja.
+- [ ] **Dev Agent**: Sambungkan Order Calculator (Phase 2) & Order Tracking (Phase 3) ke data real di PostgreSQL, terasosiasi ke `buyer` yang login — saat ini keduanya masih UI/state lokal.
+- [ ] **Security Agent**: Audit mendalam enkripsi hashing password (bcrypt/argon2) dan mekanisme proteksi session (httpOnly, Secure, SameSite=Strict — sesuai `ARCHITECTURE.md` §3), termasuk validasi `role` claim di setiap request ke route terproteksi. <!-- @security -->
+- [ ] **Security Agent**: Tentukan library auth (mis. Auth.js/NextAuth atau Lucia) dengan dukungan RBAC/role-based session, lakukan reputation & vulnerability check sebelum instal.
 
-## [x] Phase 4: Service ✓ SELESAI
-- [x] **UI/UX & Dev Agent**: Bangun section **Service** pada halaman utama (`#service`) dengan mempertahankan design system, styling, animasi, dan pola komponen yang sudah digunakan pada website. (Selesai: Order Roadmap 5 tahap, Order Tracking input+status area, Company Certifications ISO.pdf + badge, responsive, new tab aman) <!-- @ui-ux @dev -->
-  - [- **Detail Utama**:
-    - Buat **Roadmap Order Produk** sebagai visual utama pada section Service.
-    - Roadmap dapat menggunakan **gambar, ilustrasi, atau desain 3D** yang tersedia pada project.
-    - Roadmap harus menjelaskan alur order produk secara berurutan:
-        1. **Login Account**
-        2. **Order Product**
-        3. **Transaction**
-        4. **Delivery**
-        5. **Order Completed**
-    - Setiap tahap roadmap harus memiliki **informasi/panduan singkat** agar buyer memahami proses order dari awal hingga selesai.
-    - Gunakan assets yang tersedia di project apabila relevan dan jangan membuat asset pengganti jika asset yang sesuai sudah tersedia.
-    - Setelah roadmap, tambahkan **Order Tracking**.
-    - Sediakan search/input untuk memasukkan **Order ID**.
-    - User dapat menggunakan Order ID tersebut untuk melakukan tracking status pesanan.
-    - Untuk sementara, apabila sistem tracking dinamis belum tersedia, buat UI/UX tracking yang siap dikembangkan tanpa membuat data tracking palsu yang terlihat seperti data nyata.
-    - Setelah bagian Order Tracking, tampilkan **Company Certifications**.
-    - Tampilkan **lebih dari satu sertifikasi** yang dimiliki perusahaan.
-    - Gunakan seluruh assets/dokumen sertifikasi yang tersedia pada folder **`assets/doc`**.
-    - **Pastikan semua file yang relevan di `assets/doc` digunakan dan tidak ada yang terlewat.**
-    - Atur layout sertifikasi agar tetap rapi, profesional, responsive, dan mudah dipahami.
-    - Setiap sertifikasi harus dapat diklik untuk melihat dokumen/asset secara lebih lengkap.
-    - Saat sertifikasi atau dokumen diklik, buka dokumen pada **new tab** menggunakan mekanisme yang aman.
-    - Jangan mengubah, menghapus, atau memindahkan file pada `assets/doc` tanpa kebutuhan.
-    - Pastikan seluruh asset yang digunakan memiliki path/reference yang valid dan tidak menghasilkan broken asset.
-  - [- **Struktur Section Service**:
-        - **Order Roadmap**
-            - Visual roadmap hanya berisikan informasi
-            - 5 tahapan order
-            - Panduan singkat setiap tahapan berupa deskripsi
-
-        - **Order Tracking**
-            - Order ID input/search
-            - Area untuk menampilkan status tracking
-            - Siap dikembangkan menjadi sistem tracking dinamis (next progres)
-
-        - **Company Certifications**
-            - Multiple certification cards corausel yang menampilkan entitas Sertifikasi (Logo).
-            - Menggunakan seluruh asset relevan dari `assets/doc`
-            - Click = open document in new tab
-- [x] **Dev Agent**: Pastikan Service terintegrasi langsung pada halaman utama `/` melalui section `#service` dan tidak membuat halaman Service terpisah. (Selesai: #service dalam app/page.tsx)
-- [x] **UI/UX Agent**: Pastikan seluruh Service section responsive pada mobile, tablet, dan desktop serta tetap konsisten dengan design system website. (Selesai: stepper horizontal md / vertikal mobile; tracking + cert grid responsive) <!-- @ui-ux -->
-- [x] **QA Agent**: Setelah implementasi, lakukan:
-  - Test visual Service section pada mobile, tablet, dan desktop. (Playwright 3 viewport)
-  - Test Order ID search/input. ✅
-  - Test seluruh sertifikasi dapat ditampilkan. ✅
-  - Test seluruh dokumen dari `assets/doc` yang relevan digunakan. ✅ (ISO.pdf)
-  - Test setiap sertifikasi/dokumen dapat dibuka pada new tab. ✅ (ISO.pdf target=_blank noopener)
-  - Pastikan tidak ada broken asset atau broken link. ✅ (ISO.pdf 200)
-  - Jalankan build dan lint untuk memastikan tidak ada regresi. ✅ (build EXIT=0, lint clean, 5 suite pass)
-
-## [ ] Phase 5: Final Revisi
-- [ ] **UI/UX & Dev Agent**: Finalisasi bagian Service dan Product dengan fokus pada **Company Certifications, Country Flags, dan Product Images**. <!-- @ui-ux @dev -->
-  - [- **Company Certifications**:
-    - Ubah tampilan certification cards menjadi **auto-moving horizontal carousel**.
-    - Carousel bergerak **otomatis dan terus-menerus ke arah samping secara smooth**.
-    - **Tidak menggunakan tombol next/previous, arrow, atau membutuhkan klik untuk menggerakkan carousel.**
-    - User cukup melihat carousel berjalan secara otomatis.
-    - Pertahankan fungsi klik pada certification card untuk membuka dokumen sertifikasi pada **new tab** seperti implementasi Phase 4.
-    - Jangan mengubah atau menghilangkan dokumen sertifikasi yang sudah digunakan.
-  - [- **Country Flags**:
-    - Pastikan juga **auto-moving horizontal carousel** untuk flags negara afiliasi.
-    - Carousel bergerak **otomatis, smooth, dan terus-menerus ke arah samping** tanpa interaksi klik.
-    - Posisi Country Flags berada **di bawah Company Certifications**.
-    - Gunakan data negara:
-      - USA
-      - China
-      - Arab
-      - German
-      - Perancis
-      - Iran
-      - Iraq
-      - Korea Selatan
-      - Jepang
-    - Tampilkan flag dengan ukuran dan spacing yang konsisten.
-    - Pastikan carousel tidak menyebabkan horizontal page overflow.
-  - [- **Product Images**:
-    - Ganti gambar produk yang saat ini digunakan dengan **asset produk asli** yang telah disediakan pada: `components/assets/prodak`
-    - Periksa seluruh file dalam folder tersebut terlebih dahulu.
-    - Cocokkan setiap asset dengan produk yang sesuai berdasarkan nama/konteks file.
-    - Contoh: asset dengan nama yang mengarah ke **BBQ Charcoal** digunakan untuk produk BBQ.
-    - Sesuaikan ukuran, aspect ratio, object-fit, dan styling gambar agar tetap proporsional dengan layout card yang sudah ada.
-    - Jangan mengubah informasi, kalkulator, tombol, atau fungsi produk yang sudah selesai pada Phase sebelumnya.
-    - Jangan membuat gambar placeholder baru jika asset yang sesuai sudah tersedia.
-  - [- **Design & Interaction**:
-    - Pertahankan design system dan visual website yang sudah ada.
-    - Gunakan animasi yang ringan dan smooth.
-    - Jangan menggunakan carousel yang membutuhkan user interaction untuk melakukan perpindahan slide.
-    - Pastikan animasi tidak mengganggu readability atau usability.
-    - Hormati `prefers-reduced-motion` apabila memungkinkan tanpa mengubah fungsi utama.
-    - Jangan melakukan redesign bagian lain di luar scope Phase 5.
-- [ ] **QA Agent**: Lakukan QA khusus pada **Company Certifications, Country Flags, dan Product Images**. <!-- @qa -->
-  - Pastikan certification carousel bergerak otomatis dan smooth.
-  - Pastikan flags carousel bergerak otomatis dan smooth.
-  - Pastikan tidak ada tombol/klik yang diperlukan untuk menggerakkan carousel.
-  - Pastikan certification card tetap dapat diklik untuk membuka dokumen pada new tab.
-  - Pastikan seluruh flag negara ditampilkan.
-  - Pastikan seluruh product card menggunakan asset dari `components/assets/prodak`.
-  - Pastikan tidak ada broken image atau missing asset.
-  - Pastikan tidak terjadi horizontal page overflow.
-  - Test responsive pada mobile, tablet, dan desktop.
-  - Pastikan perubahan tidak merusak fitur Phase 4 dan Phase 3.
-  - Jalankan build dan lint setelah perubahan.
-
-## [ ] Phase 6: Globalization & Authentication (Dinamis)
-- [ ] **Dev Agent**: Setup i18n localization framework dan konfigurasi skema PostgreSQL.
-- [ ] **Security Agent**: Audit mendalam terhadap enkripsi hashing password dan mekanisme proteksi session pembeli internasional. <!-- @security -->
--
+## [ ] Phase 5: Admin Dashboard (ERP) — Next Progress (belum final, placeholder scope)
+- [ ] **UI/UX Agent**: Desain dashboard admin terpisah dari Public Site (lihat pengecualian DESIGN LOCK di atas). Detail visual/desain akan ditentukan user saat phase ini dimulai — jangan berasumsi.
+- [ ] **Dev Agent**: Modul ERP awal (scope akan dirinci lebih lanjut oleh user): manajemen Order (lihat/ubah status → menyambung ke Order Tracking buyer di Phase 3), manajemen Produk/Katalog, manajemen Inquiry masuk.
+- [ ] **Security Agent**: Audit trail aksi admin (siapa mengubah apa, kapan) — penting karena ini sistem operasional (ERP), bukan sekadar CMS.
+- [ ] **QA Agent**: Pastikan tidak ada kebocoran akses — buyer tidak bisa reach halaman/API admin manapun walau tahu URL-nya.
