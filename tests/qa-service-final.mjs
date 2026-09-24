@@ -11,6 +11,8 @@ const CONFIG = [
 async function check(browser, cfg) {
   const ctx = await browser.newContext({ viewport: cfg.viewport });
   const page = await ctx.newPage();
+  const r = [];
+  let flagsOk = true;
   await page.goto("http://localhost:3000/#service", { waitUntil: "networkidle" });
 
   // 1. Sertifikasi ada — Company Certifications heading
@@ -24,7 +26,7 @@ async function check(browser, cfg) {
 
   // 3. Flags negara afiliasi — di #service pakai lucide Flag? Periksa 7 negara
   for (const negara of ["Arab Saudi","Aljazair","Irak","Iran","Amerika","Jepang","Korea"]) {
-    const v = await page.locator(`#service text=${negara}`).first().isVisible();
+    const v = await page.locator(`#service :has-text("${negara}")`).first().isVisible().catch(() => false);
     if (!v) flagsOk = false;
   }
   r.push(["Flags 7 negara afiliasi tampil", flagsOk, true]);
