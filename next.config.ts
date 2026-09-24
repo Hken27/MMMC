@@ -28,8 +28,8 @@ const csp = [
 
   // Gambar: self + data URI + blob (image optimization Next.js).
   // ── NOTE: tambahkan host CDN/gambar pihak ketiga SECARA SADAR di sini,
-  // ── jangan membuka lebar-lebar. Contoh nanti: https://images.unsplash.com
-  "img-src 'self' data: blob:",
+  // ── jangan membuka lebar-lebar. Contoh: flagcdn.com untuk bendera negara.
+  "img-src 'self' data: blob: https://flagcdn.com",
 
   // Font: next/font self-hosted saat build → same-origin cukup.
   "font-src 'self' data:",
