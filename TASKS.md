@@ -125,6 +125,14 @@
   - [x] Perbaikan hydration mismatch pada formulir inquiry (`InquiryForm`) dengan `mounted` check client-side rendering.
   - [x] Perbaikan redirect login berdasarkan role (`ADMIN` → `/admin`, `BUYER` → `/`).
 
+### 4.9 Session-Aware Navigation & Profile Dropdown
+- [x] **Dev & UI/UX Agent**: Perbaikan routing navigasi untuk seamless user experience post-authentication.
+  - [x] **NavbarClient**: Menampilkan profile dropdown (user name/email + logout button + admin dashboard link) saat authenticated; tombol login hilang.
+  - [x] **NavbarMobileMenu**: Integrasi session awareness di mobile drawer — tampil logout dan dashboard admin link untuk role ADMIN.
+  - [x] **Session Loading State**: Skeleton placeholder di desktop nav saat session status loading.
+  - [x] **CallbackUrl Redirect**: AdminLoginForm respects `callbackUrl` query param dari middleware, redirect post-login ke halaman asal (e.g., `/admin` jika diblokir akses tanpa login).
+  - [x] **Profile Menu State Management**: Close profile dropdown saat mobile drawer membuka (mencegah overlap).
+
 ## [ ] Phase 5: Admin Dashboard (ERP) — Next Progress (belum final, placeholder scope)
 - [ ] **UI/UX Agent**: Desain dashboard admin terpisah dari Public Site (lihat pengecualian DESIGN LOCK di atas). Detail visual/desain akan ditentukan user saat phase ini dimulai — jangan berasumsi.
 - [ ] **Dev Agent**: Modul ERP awal (scope akan dirinci lebih lanjut oleh user): manajemen Order (lihat/ubah status → menyambung ke Order Tracking buyer di Phase 3), manajemen Produk/Katalog, manajemen Inquiry masuk.
