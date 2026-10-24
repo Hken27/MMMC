@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import {
@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { INTERNATIONAL_REGIONS } from '@/app/lib/regions';
+import { getWorldwideCountries, getCountryRegions, getStateCities, getCityDistricts } from '@/app/lib/countries-api';
 
 const BUSINESS_SECTORS = [
   'Retail',
@@ -98,6 +99,12 @@ export function BuyerRegistrationForm() {
   const [otpVerified, setOtpVerified] = useState(false);
   const [otpCode, setOtpCode] = useState('');
 
+  // Dynamic countries & regions
+  const [countries, setCountries] = useState<Array<{ code: string; name: string; dial: string }>>([]);
+  const [regions, setRegions] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [loadingCountries, setLoadingCountries] = useState(true);
+
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     title: string;
@@ -129,8 +136,38 @@ export function BuyerRegistrationForm() {
 
   const countryObj = INTERNATIONAL_REGIONS[formData.country] || INTERNATIONAL_REGIONS['ID'];
   const provinces = countryObj ? Object.keys(countryObj.provinces) : [];
-  const cities = (formData.province && countryObj?.provinces[formData.province]) ? Object.keys(countryObj.provinces[formData.province]) : [];
+  const citiesFromHardcoded = (formData.province && countryObj?.provinces[formData.province]) ? Object.keys(countryObj.provinces[formData.province]) : [];
   const districts = (formData.province && formData.city && countryObj?.provinces[formData.province]?.[formData.city]) ? countryObj.provinces[formData.province][formData.city] : [];
+
+  // Fetch countries on mount
+  useEffect(() => {
+    const fetchCountries = async () => {
+      setLoadingCountries(true);
+      const fetchedCountries = await getWorldwideCountries();
+      setCountries(fetchedCountries.length > 0 ? fetchedCountries : COUNTRIES_DIAL);
+      setLoadingCountries(false);
+    };
+    fetchCountries();
+  }, []);
+
+  // Fetch regions when country changes
+  useEffect(() => {
+    const fetchRegions = async () => {
+      if (formData.country) {
+        // Check if country exists in hardcoded regions first
+        if (INTERNATIONAL_REGIONS[formData.country]) {
+          setRegions(Object.keys(INTERNATIONAL_REGIONS[formData.country].provinces));
+        } else {
+          // Fetch from API
+          const fetchedRegions = await getCountryRegions(formData.country);
+          setRegions(fetchedRegions);
+        }
+        setCities([]);
+        setFormData((prev) => ({ ...prev, province: '', city: '', district: '' }));
+      }
+    };
+    fetchRegions();
+  }, [formData.country]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
