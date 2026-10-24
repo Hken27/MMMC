@@ -91,7 +91,7 @@ export function NavbarMobileMenu({
                   <User className="h-4 w-4 text-accent" />
                   <p className="text-xs text-muted-foreground">Logged in as</p>
                 </div>
-                <p className="text-xs font-medium text-foreground truncate">{session.user?.email}</p>
+                <p className="text-xs font-medium text-foreground truncate">{session?.user?.username || session?.user?.email || 'User'}</p>
               </div>
               {session.user?.role === "ADMIN" && (
                 <Link

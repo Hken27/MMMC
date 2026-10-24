@@ -89,7 +89,7 @@ export function NavbarClient({ navLinks }: { navLinks: NavLink[] }) {
           {/* Login Button atau Profile Dropdown */}
           {status === "loading" ? (
             <div className="h-10 w-10 rounded-md bg-surface/50 animate-pulse" />
-          ) : session ? (
+          ) : session?.user ? (
             <div className="relative">
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
@@ -98,7 +98,7 @@ export function NavbarClient({ navLinks }: { navLinks: NavLink[] }) {
                 aria-expanded={profileOpen}
               >
                 <User className="h-4 w-4" />
-                <span className="hidden sm:inline">{session.user?.name || session.user?.email}</span>
+                <span className="hidden sm:inline">{session?.user?.username || session?.user?.name || session?.user?.email || 'Pengguna'}</span>
               </button>
 
               <AnimatePresence>
@@ -113,9 +113,9 @@ export function NavbarClient({ navLinks }: { navLinks: NavLink[] }) {
                   >
                     <div className="px-3 py-2 border-b border-border">
                       <p className="text-xs text-muted-foreground">Logged in as</p>
-                      <p className="text-sm font-medium text-foreground truncate">{session.user?.email}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{session?.user?.email || 'User'}</p>
                     </div>
-                    {session.user?.role === "ADMIN" && (
+                    {session?.user?.role === "ADMIN" && (
                       <Link
                         href="/admin"
                         onClick={() => setProfileOpen(false)}

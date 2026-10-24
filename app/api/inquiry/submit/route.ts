@@ -28,14 +28,20 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { nama, email, perusahaan, produk, qty, pesan } = body;
+    const { nama, email, perusahaan, produk, qty, pesan, orderConfig } = body;
 
     if (!nama || !email || !pesan) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     const inquiryNumber = `INQ-${Date.now().toString().slice(-6)}`;
-    const fullMessage = `Nama: ${nama}\nEmail: ${email}\nPerusahaan: ${perusahaan}\nProduk: ${produk}\nQty: ${qty || '-'}\n\nPesan:\n${pesan}`;
+
+    // Build full message with order config if available
+    let fullMessage = `Nama: ${nama}\nEmail: ${email}\nPerusahaan: ${perusahaan}\nProduk: ${produk}\nQty: ${qty || '-'}\n\nPesan:\n${pesan}`;
+
+    if (orderConfig) {
+      fullMessage += `\n\n=== KONFIGURASI ORDER ===\nTipe Pengiriman: ${orderConfig.deliveryType}\nMOQ: ${orderConfig.moq}\nPakaging: ${orderConfig.packaging}\nPengiriman: ${orderConfig.shipping}\nSubtotal: Rp${orderConfig.subtotal.toLocaleString('id-ID')}`;
+    }
 
     const inquiry = await prisma.inquiry.create({
       data: {

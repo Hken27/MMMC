@@ -73,7 +73,31 @@ export function ProductOrder({ products }: { products: Product[] }) {
       return;
     }
     setError(null);
-    setShowPopup(true);
+
+    // Simpan order config ke sessionStorage
+    const orderConfig = {
+      productId: sel.productId,
+      productName: tp(`${productKey(product.id)}.name`),
+      deliveryType: sel.deliveryType,
+      moq: sel.moq,
+      packaging: sel.packaging,
+      shipping: sel.shipping,
+      qtyKg: sel.qtyKg,
+      subtotal: subtotal,
+    };
+
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("orderConfig", JSON.stringify(orderConfig));
+
+      // Dispatch custom event untuk notify InquiryForm
+      window.dispatchEvent(new CustomEvent("orderConfigUpdated", { detail: orderConfig }));
+
+      // Scroll ke inquiry form
+      const inquirySection = document.getElementById("kontak");
+      if (inquirySection) {
+        inquirySection.scrollIntoView({ behavior: "smooth" });
+      }
+    }
   }
 
   return (

@@ -132,6 +132,17 @@
   - [x] **Session Loading State**: Skeleton placeholder di desktop nav saat session status loading.
   - [x] **CallbackUrl Redirect**: AdminLoginForm respects `callbackUrl` query param dari middleware, redirect post-login ke halaman asal (e.g., `/admin` jika diblokir akses tanpa login).
   - [x] **Profile Menu State Management**: Close profile dropdown saat mobile drawer membuka (mencegah overlap).
+  - [x] **Username Display**: Navbar menampilkan username (bukan email) saat buyer/admin login, dengan fallback ke name/email jika tidak ada.
+
+### 4.10 Order Configuration Auto-Fill di Inquiry Form
+- [x] **Dev & UI/UX Agent**: Integrasi seamless antara ProductOrder calculator dan InquiryForm — order config otomatis mengisi form.
+  - [x] **ProductOrder Handler**: Klik "Kirim Inquiry Sekarang" → simpan konfigurasi (produk, qty, MOQ, packaging, shipping, subtotal) ke sessionStorage + dispatch custom event `orderConfigUpdated` + scroll ke form.
+  - [x] **InquiryForm Event Listener**: Listen custom event → re-read sessionStorage → update state orderConfig.
+  - [x] **Auto-Fill Fields**: Form auto-fill dari session (nama lengkap, email) + dari orderConfig (produk, qty). Buyer tinggal input perusahaan + pesan.
+  - [x] **Form State Management**: State-controlled inputs (bukan defaultValue) untuk ensure UI sync dengan state data.
+  - [x] **Order Config Alert**: Tampilkan summary card di atas form saat orderConfig terdeteksi (produk, qty, subtotal).
+  - [x] **API Enhancement**: `/api/inquiry/submit` terima orderConfig → simpan lengkap ke message field inquiry di database.
+  - [x] **Post-Submit Cleanup**: Clear sessionStorage + reset form setelah sukses submit.
 
 ## [ ] Phase 5: Admin Dashboard (ERP) — Next Progress (belum final, placeholder scope)
 - [ ] **UI/UX Agent**: Desain dashboard admin terpisah dari Public Site (lihat pengecualian DESIGN LOCK di atas). Detail visual/desain akan ditentukan user saat phase ini dimulai — jangan berasumsi.

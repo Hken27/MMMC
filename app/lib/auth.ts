@@ -11,9 +11,10 @@ declare module 'next-auth' {
       id: string;
       email?: string | null;
       name?: string | null;
+      username?: string | null;
       image?: string | null;
-      role: string;
-      verified: boolean;
+      role?: string;
+      verified?: boolean;
       mustChangePassword?: boolean;
     };
   }
@@ -22,8 +23,9 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
-    role: string;
-    verified: boolean;
+    username?: string;
+    role?: string;
+    verified?: boolean;
     mustChangePassword?: boolean;
   }
 }
@@ -93,6 +95,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.username = (user as any).username;
         token.role = (user as any).role;
         token.verified = (user as any).verified;
         token.mustChangePassword = (user as any).mustChangePassword;
@@ -102,6 +105,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        (session.user as any).username = token.username;
         (session.user as any).role = token.role;
         (session.user as any).verified = token.verified;
         (session.user as any).mustChangePassword = token.mustChangePassword;

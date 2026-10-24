@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Inter } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
 import "./globals.css";
 import { Navbar } from "./components/navbar/navbar";
+import { Providers } from "./providers";
 import idMessages from "../messages/id.json";
 import enMessages from "../messages/en.json";
 
@@ -42,14 +42,14 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${interSans.variable} h-full antialiased`}
     >
       <body className="min-h-full font-body">
-        <NextIntlClientProvider messages={messages}>
+        <Providers locale={lang} messages={messages}>
           <div className="flex min-h-svh flex-col">
             <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur">
               <Navbar />
             </header>
             {children}
           </div>
-        </NextIntlClientProvider>
+        </Providers>
       </body>
     </html>
   );

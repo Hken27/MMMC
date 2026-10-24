@@ -18,6 +18,17 @@ import {
 } from "@/components/ui/select";
 import { PRODUCTS } from "@/lib/products";
 
+interface OrderConfig {
+  productId: string;
+  productName: string;
+  deliveryType: string;
+  moq: string;
+  packaging: string;
+  shipping: string;
+  qtyKg: number;
+  subtotal: number;
+}
+
 export function InquiryForm() {
   const router = useRouter();
   const t = useTranslations("Inquiry");
@@ -25,6 +36,18 @@ export function InquiryForm() {
 
   const [mounted, setMounted] = useState(false);
   const [session, setSession] = useState<any>(null);
+  const [orderConfig, setOrderConfig] = useState<OrderConfig | null>(null);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    nama: "",
+    email: "",
+    perusahaan: "",
+    produk: "",
+    qty: "",
+    pesan: "",
+  });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
@@ -41,30 +64,70 @@ export function InquiryForm() {
 
   useEffect(() => {
     setMounted(true);
+
+    // Read session
     fetch('/api/auth/session')
       .then((res) => res.json())
       .then((data) => {
         if (data && data.user) {
           setSession(data);
+          // Auto-fill nama & email dari session
+          setFormData((prev) => ({
+            ...prev,
+            nama: data.user.name || data.user.username || "",
+            email: data.user.email || "",
+          }));
         }
       })
       .catch(() => {});
+
+    // Read orderConfig dari sessionStorage
+    if (typeof window !== "undefined") {
+      const readOrderConfig = () => {
+        const saved = sessionStorage.getItem("orderConfig");
+        if (saved) {
+          try {
+            const config = JSON.parse(saved);
+            setOrderConfig(config);
+          } catch (err) {
+            // Invalid JSON, ignore
+          }
+        }
+      };
+
+      readOrderConfig();
+
+      // Listen untuk custom event dari ProductOrder
+      const handleOrderConfigUpdated = (e: Event) => {
+        readOrderConfig();
+      };
+
+      window.addEventListener("orderConfigUpdated", handleOrderConfigUpdated);
+      return () => window.removeEventListener("orderConfigUpdated", handleOrderConfigUpdated);
+    }
   }, []);
+
+  // Separate effect untuk update form saat orderConfig berubah
+  useEffect(() => {
+    if (orderConfig) {
+      setFormData((prev) => ({
+        ...prev,
+        produk: orderConfig.productId || "",
+        qty: orderConfig.qtyKg?.toString() || "",
+      }));
+    }
+  }, [orderConfig]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
-    const data = new FormData(form);
 
-    const website = String(data.get("website") ?? "").trim();
-    if (website) return;
-
-    const nama = String(data.get("nama") ?? "").trim();
-    const email = String(data.get("email") ?? "").trim();
-    const perusahaan = String(data.get("perusahaan") ?? "").trim();
-    const produk = String(data.get("produk") ?? "");
-    const qty = String(data.get("qty") ?? "").trim();
-    const pesan = String(data.get("pesan") ?? "").trim();
+    const nama = formData.nama.trim();
+    const email = formData.email.trim();
+    const perusahaan = formData.perusahaan.trim();
+    const produk = formData.produk;
+    const qty = formData.qty.trim();
+    const pesan = formData.pesan.trim();
 
     const errs: Record<string, string> = {};
     if (!nama) errs.nama = t("errNameRequired");
@@ -97,7 +160,15 @@ export function InquiryForm() {
       const res = await fetch('/api/inquiry/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nama, email, perusahaan, produk, qty, pesan }),
+        body: JSON.stringify({
+          nama,
+          email,
+          perusahaan,
+          produk,
+          qty,
+          pesan,
+          orderConfig: orderConfig || undefined, // Include order config if available
+        }),
       });
 
       const result = await res.json();
@@ -109,7 +180,20 @@ export function InquiryForm() {
         description: `Pesan inquiry Anda berhasil dikirim dan tersimpan di database dengan nomor ${result.inquiryNumber}. Tim kami akan segera merespons.`,
         type: 'success',
         onConfirm: () => {
-          form.reset();
+          setFormData({
+            nama: session?.user?.name || session?.user?.username || "",
+            email: session?.user?.email || "",
+            perusahaan: "",
+            produk: "",
+            qty: "",
+            pesan: "",
+          });
+          setOrderConfig(null);
+          setErrors({});
+          // Clear sessionStorage setelah sukses submit
+          if (typeof window !== "undefined") {
+            sessionStorage.removeItem("orderConfig");
+          }
         },
       });
     } catch (err: any) {
@@ -137,6 +221,16 @@ export function InquiryForm() {
         confirmLabel="Tutup"
       />
 
+      {/* Order Config Loaded Alert */}
+      {orderConfig && (
+        <div className="mb-5 rounded-lg border border-accent/30 bg-accent/10 p-3 text-sm text-accent">
+          <p className="font-medium">✓ Konfigurasi Order Terbaca</p>
+          <p className="mt-1 text-xs text-accent/80">
+            Produk: <strong>{orderConfig.productName}</strong> | Qty: <strong>{orderConfig.qtyKg} kg</strong> | Subtotal: <strong>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(orderConfig.subtotal)}</strong>
+          </p>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="grid gap-5 sm:grid-cols-2"
@@ -148,7 +242,8 @@ export function InquiryForm() {
             id="nama"
             name="nama"
             placeholder={t("namePlaceholder")}
-            defaultValue={mounted ? (session?.user?.name || '') : ''}
+            value={formData.nama}
+            onChange={(e) => setFormData((prev) => ({ ...prev, nama: e.target.value }))}
             className="bg-surface/50"
             aria-invalid={!!errors.nama}
           />
@@ -161,7 +256,8 @@ export function InquiryForm() {
             name="email"
             type="email"
             placeholder={t("emailPlaceholder")}
-            defaultValue={mounted ? (session?.user?.email || '') : ''}
+            value={formData.email}
+            onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
             className="bg-surface/50"
             aria-invalid={!!errors.email}
           />
@@ -178,14 +274,16 @@ export function InquiryForm() {
             id="perusahaan"
             name="perusahaan"
             placeholder={t("companyPlaceholder")}
+            value={formData.perusahaan}
+            onChange={(e) => setFormData((prev) => ({ ...prev, perusahaan: e.target.value }))}
             className="bg-surface/50"
             aria-invalid={!!errors.perusahaan}
           />
         </Field>
 
-        {/* Produk */}
+        {/* Produk — auto-select dari orderConfig */}
         <Field label={t("product")} htmlFor="produk" required error={errors.produk}>
-          <Select name="produk">
+          <Select value={formData.produk} onValueChange={(val) => setFormData((prev) => ({ ...prev, produk: val }))}>
             <SelectTrigger id="produk" className="bg-surface/50 w-full">
               <SelectValue placeholder={t("productPlaceholder")} />
             </SelectTrigger>
@@ -202,7 +300,7 @@ export function InquiryForm() {
           </Select>
         </Field>
 
-        {/* Qty */}
+        {/* Qty — auto-fill dari orderConfig */}
         <Field label={t("qty")} htmlFor="qty" error={errors.qty}>
           <Input
             id="qty"
@@ -211,6 +309,8 @@ export function InquiryForm() {
             inputMode="numeric"
             min="1"
             placeholder={t("qtyPlaceholder")}
+            value={formData.qty}
+            onChange={(e) => setFormData((prev) => ({ ...prev, qty: e.target.value }))}
             className="bg-surface/50"
             aria-invalid={!!errors.qty}
           />
@@ -228,6 +328,8 @@ export function InquiryForm() {
             name="pesan"
             rows={5}
             placeholder={t("messagePlaceholder")}
+            value={formData.pesan}
+            onChange={(e) => setFormData((prev) => ({ ...prev, pesan: e.target.value }))}
             className="bg-surface/50 resize-none"
             aria-invalid={!!errors.pesan}
           />
