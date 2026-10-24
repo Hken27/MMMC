@@ -1,21 +1,26 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useSession, signOut } from "next-auth/react";
 import { AnimatePresence, motion } from "motion/react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, User } from "lucide-react";
 import { NavbarMobileMenu } from "./navbar-mobile-menu";
 import { DesktopNavLinks } from "./desktop-nav-links";
 import { LanguageSwitch } from "../ui/language-switch";
+import Link from "next/link";
 import type { NavLink } from "./navbar";
 
 /**
  * NavbarClient — layer interaktif navbar (single-page website).
  * Animasi smooth pada initial load + interactive states.
  * navLinks di-pass dari server component (i18n already-resolved).
+ * Session-aware: menampilkan profile/logout ketika authenticated.
  */
 export function NavbarClient({ navLinks }: { navLinks: NavLink[] }) {
+  const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("#home");
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -40,6 +45,11 @@ export function NavbarClient({ navLinks }: { navLinks: NavLink[] }) {
 
     return () => observers.forEach((o) => o.disconnect());
   }, []);
+
+  // Close profile menu saat mobile drawer buka
+  useEffect(() => {
+    if (open) setProfileOpen(false);
+  }, [open]);
 
   // isActive: anchor match
   const isActive = useCallback(
@@ -76,18 +86,71 @@ export function NavbarClient({ navLinks }: { navLinks: NavLink[] }) {
           {/* Language switch — dropdown bahasa */}
           <LanguageSwitch />
 
-          {/* Login Button */}
-          <motion.a
-            href="/login"
-            className="group relative inline-flex items-center justify-center rounded-md bg-gradient-to-r from-accent to-accent/80 px-6 py-2.5 text-sm font-semibold text-white shadow-sm overflow-hidden"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          >
-            <span className="relative">
-              Masuk
-            </span>
-          </motion.a>
+          {/* Login Button atau Profile Dropdown */}
+          {status === "loading" ? (
+            <div className="h-10 w-10 rounded-md bg-surface/50 animate-pulse" />
+          ) : session ? (
+            <div className="relative">
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-surface-hover transition-colors"
+                aria-haspopup="menu"
+                aria-expanded={profileOpen}
+              >
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">{session.user?.name || session.user?.email}</span>
+              </button>
+
+              <AnimatePresence>
+                {profileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-1 w-48 rounded-lg border border-border bg-background shadow-lg z-50"
+                    role="menu"
+                  >
+                    <div className="px-3 py-2 border-b border-border">
+                      <p className="text-xs text-muted-foreground">Logged in as</p>
+                      <p className="text-sm font-medium text-foreground truncate">{session.user?.email}</p>
+                    </div>
+                    {session.user?.role === "ADMIN" && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setProfileOpen(false)}
+                        className="block w-full text-left px-3 py-2 text-sm text-foreground/70 hover:text-foreground hover:bg-surface-hover transition-colors rounded-none"
+                      >
+                        Dashboard Admin
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => {
+                        signOut({ callbackUrl: "/" });
+                        setProfileOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm text-red-500 hover:text-red-600 hover:bg-red-50/10 transition-colors flex items-center gap-2"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <motion.a
+              href="/login"
+              className="group relative inline-flex items-center justify-center rounded-md bg-gradient-to-r from-accent to-accent/80 px-6 py-2.5 text-sm font-semibold text-white shadow-sm overflow-hidden"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              <span className="relative">
+                Masuk
+              </span>
+            </motion.a>
+          )}
         </div>
       </motion.div>
 

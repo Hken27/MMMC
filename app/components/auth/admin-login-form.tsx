@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -11,6 +11,8 @@ import { ChangePasswordModal } from '@/app/components/auth/change-password-modal
 
 export function AdminLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || null;
   const [isLoading, setIsLoading] = useState(false);
   const [mustChangePassword, setMustChangePassword] = useState(false);
 
@@ -70,6 +72,7 @@ export function AdminLoginForm() {
         }
 
         const role = session?.user?.role;
+        const redirectUrl = callbackUrl || (role === 'ADMIN' ? '/admin' : '/');
 
         setModalState({
           isOpen: true,
@@ -77,20 +80,12 @@ export function AdminLoginForm() {
           description: `Selamat datang, ${session?.user?.name || session?.user?.email || 'Pengguna'}! Anda berhasil masuk.`,
           type: 'success',
           onConfirm: () => {
-            if (role === 'ADMIN') {
-              router.push('/admin');
-            } else {
-              router.push('/');
-            }
+            router.push(redirectUrl);
           },
         });
 
         setTimeout(() => {
-          if (role === 'ADMIN') {
-            router.push('/admin');
-          } else {
-            router.push('/');
-          }
+          router.push(redirectUrl);
         }, 1200);
         return;
       }

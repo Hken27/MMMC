@@ -1,13 +1,17 @@
 "use client";
 
 import { motion } from "motion/react";
+import { useSession, signOut } from "next-auth/react";
 import { LanguageSwitch } from "../ui/language-switch";
+import Link from "next/link";
+import { LogOut, User } from "lucide-react";
 import type { NavLink } from "./navbar";
 
 /**
  * NavbarMobileMenu — drawer slide-in kanan untuk layar < md.
  * Motion layout animated + aria-management (role=dialog, focus trap light).
  * Dipanggil dalam <AnimatePresence> oleh parent (unmount on close).
+ * Session-aware: menampilkan profile/logout ketika authenticated.
  */
 export function NavbarMobileMenu({
   navLinks,
@@ -18,6 +22,7 @@ export function NavbarMobileMenu({
   onClose: () => void;
   isActive: (href: string) => boolean;
 }) {
+  const { data: session } = useSession();
   return (
     <>
       {/* Overlay — klik area luar menutup, aria-hidden */}
@@ -79,13 +84,44 @@ export function NavbarMobileMenu({
 
         <div className="mt-auto flex flex-col gap-2 border-t border-border pt-4">
           <LanguageSwitch />
-          <a
-            href="/login"
-            onClick={onClose}
-            className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-accent-dark"
-          >
-            Masuk
-          </a>
+          {session ? (
+            <>
+              <div className="px-3 py-2 rounded-md bg-surface/50">
+                <div className="flex items-center gap-2 mb-1">
+                  <User className="h-4 w-4 text-accent" />
+                  <p className="text-xs text-muted-foreground">Logged in as</p>
+                </div>
+                <p className="text-xs font-medium text-foreground truncate">{session.user?.email}</p>
+              </div>
+              {session.user?.role === "ADMIN" && (
+                <Link
+                  href="/admin"
+                  onClick={onClose}
+                  className="inline-flex items-center justify-center rounded-md bg-accent/10 px-4 py-2.5 text-sm font-semibold text-accent hover:bg-accent/20 transition-colors"
+                >
+                  Dashboard Admin
+                </Link>
+              )}
+              <button
+                onClick={() => {
+                  signOut({ callbackUrl: "/" });
+                  onClose();
+                }}
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-500/20 transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <a
+              href="/login"
+              onClick={onClose}
+              className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-accent-dark"
+            >
+              Masuk
+            </a>
+          )}
         </div>
       </motion.div>
     </>
