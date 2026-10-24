@@ -1,10 +1,11 @@
 "use client";
 
 import { FileText, ExternalLink, Award, ShieldCheck } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 /**
  * Certifications — static grid layout (tanpa carousel).
- * Menampilkan seluruh sertifikasi dalam grid responsif.
+ * Nama & deskripsi sertifikasi i18n via next-intl.
  */
 
 type Cert = {
@@ -52,19 +53,21 @@ const CERTS: Cert[] = [
 ];
 
 export function Certifications() {
+  const t = useTranslations("Certification");
+
   return (
     <div>
       {/* Header */}
       <div className="mb-8 text-center">
         <span className="mb-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold tracking-wide text-accent">
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-          SERTIFIKASI
+          {t("badge")}
         </span>
         <h3 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Company <span className="text-accent">Certifications</span>
+          {t("titlePrefix")} <span className="text-accent">{t("titleAccent")}</span>
         </h3>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Standar kualitas dan legalitas yang kami pegang untuk ekspor internasional.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -79,7 +82,10 @@ export function Certifications() {
 }
 
 function CertCard({ cert }: { cert: Cert }) {
+  const t = useTranslations("Certification");
   const isAvailable = cert.hasFile;
+  const name = t(`items.${cert.id}.name`);
+  const desc = t(`items.${cert.id}.desc`);
 
   return (
     <a
@@ -92,24 +98,24 @@ function CertCard({ cert }: { cert: Cert }) {
           ? "cursor-pointer hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5"
           : "cursor-default opacity-70"
       }`}
-      aria-label={`${cert.name} — ${isAvailable ? "buka dokumen" : "tersedia di fase berikutnya"}`}
+      aria-label={`${name} — ${isAvailable ? t("viewDoc") : t("later")}`}
     >
       <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent/10 text-accent transition-colors group-hover:bg-accent/20">
         <CertIcon icon={cert.icon} />
       </div>
       <div>
-        <h4 className="text-sm font-semibold text-foreground">{cert.name}</h4>
-        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{cert.description}</p>
+        <h4 className="text-sm font-semibold text-foreground">{name}</h4>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{desc}</p>
       </div>
       {isAvailable && (
         <span className="inline-flex items-center gap-1 text-xs font-medium text-accent">
           <FileText className="h-3.5 w-3.5" aria-hidden="true" />
-          Lihat Dokumen
+          {t("viewDoc")}
           <ExternalLink className="h-3 w-3" aria-hidden="true" />
         </span>
       )}
       {!isAvailable && (
-        <span className="text-xs text-muted-foreground/60">Tersedia di fase berikutnya</span>
+        <span className="text-xs text-muted-foreground/60">{t("later")}</span>
       )}
     </a>
   );

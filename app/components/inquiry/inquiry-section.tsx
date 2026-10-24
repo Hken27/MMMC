@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Mail, Phone, MapPin, Clock, Calendar } from "lucide-react";
 import { InquiryForm } from "./inquiry-form";
 import {
@@ -8,9 +9,11 @@ import {
 
 /**
  * InquirySection — layout kontak: info kontak + QR + jam operasional + sosmed
- * di kiri, form inquiry di kanan. RSC wrapper untuk SEO.
+ * di kiri, form inquiry di kanan. RSC wrapper untuk SEO. i18n via next-intl.
  */
 export function InquirySection() {
+  const t = useTranslations("Contact");
+
   return (
     <section id="kontak" className="w-full scroll-mt-16 py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -21,14 +24,13 @@ export function InquirySection() {
             <div>
               <span className="mb-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold tracking-wide text-accent">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                KONTAK KAMI
+                {t("badge")}
               </span>
               <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                Kirim <span className="text-accent">Inquiry</span> Anda
+                {t("titlePrefix")} <span className="text-accent">{t("titleAccent")}</span> {t("titleSuffix")}
               </h2>
               <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-                Butuh volume besar, packaging spesial, atau target negara tertentu?
-                Ceritakan kebutuhan Anda, tim kami siap membantu.
+                {t("subtitle")}
               </p>
             </div>
 
@@ -36,18 +38,18 @@ export function InquirySection() {
             <div className="grid gap-3 sm:grid-cols-2">
               <ChannelCard
                 icon={<MapPin className="h-5 w-5" />}
-                title="Head Office"
-                value="Pasuruan, Jawa Timur, Indonesia"
+                title={t("headOffice")}
+                value={t("headOfficeValue")}
               />
               <ChannelCard
                 icon={<Mail className="h-5 w-5" />}
-                title="Email"
+                title={t("email")}
                 value="sales@cmmm.co.id"
                 href="mailto:sales@cmmm.co.id"
               />
               <ChannelCard
                 icon={<Phone className="h-5 w-5" />}
-                title="WhatsApp"
+                title={t("whatsapp")}
                 value="+62 812-3456-7890"
                 href="https://wa.me/6281234567890"
               />
@@ -69,7 +71,7 @@ export function InquirySection() {
                     height={112}
                   />
                   <p className="text-center text-xs text-muted-foreground">
-                    Scan via <span className="font-medium text-accent">{qr.label}</span>
+                    {t("scanViaLabel")}: <span className="font-medium text-accent">{qr.label}</span>
                   </p>
                 </div>
               ))}
@@ -79,7 +81,7 @@ export function InquirySection() {
             <div className="rounded-2xl border border-border/50 bg-card p-6">
               <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
                 <Clock className="h-4 w-4 text-accent" aria-hidden="true" />
-                Jam Operasional
+                {t("hours")}
               </h3>
               <div className="space-y-3">
                 {OPERATIONAL_HOURS.map((h) => (
@@ -89,9 +91,11 @@ export function InquirySection() {
                   >
                     <span className="flex items-center gap-2 text-muted-foreground">
                       <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
-                      {h.days}
+                      {h.days === "Senin – Jumat" ? t("hoursWeek") : t("hoursWeekend")}
                     </span>
-                    <span className="font-medium text-foreground">{h.hours}</span>
+                    <span className="font-medium text-foreground">
+                      {h.days === "Senin – Jumat" ? t("hoursWeekTime") : t("hoursWeekendTime")}
+                    </span>
                   </div>
                 ))}
               </div>

@@ -2,54 +2,47 @@
 
 import { motion } from "motion/react";
 import { LogIn, ShoppingBag, CreditCard, Truck, CheckCircle2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 /**
  * OrderRoadmap — visual 5 tahap alur order produk.
- * Horizontal di desktop, vertikal di mobile.
+ * Horizontal di desktop, vertikal di mobile. i18n via next-intl.
  */
-const STEPS = [
-  {
-    icon: LogIn,
-    title: "Login Account",
-    desc: "Daftar atau masuk akun buyer untuk memulai proses order.",
-  },
-  {
-    icon: ShoppingBag,
-    title: "Order Product",
-    desc: "Pilih produk, tentukan MOQ, packaging, dan quantity sesuai kebutuhan.",
-  },
-  {
-    icon: CreditCard,
-    title: "Transaction",
-    desc: "Lakukan pembayaran sesuai invoice. Tersedia berbagai metode pembayaran.",
-  },
-  {
-    icon: Truck,
-    title: "Delivery",
-    desc: "Pengiriman via logistik internasional atau domestik sesuai pilihan Anda.",
-  },
-  {
-    icon: CheckCircle2,
-    title: "Order Completed",
-    desc: "Pesanan berhasil diterima. Kami siap membantu order selanjutnya.",
-  },
-];
+const STEP_KEYS = ["login", "order", "transaction", "delivery", "completed"] as const;
+
+const STEP_ICONS = {
+  login: LogIn,
+  order: ShoppingBag,
+  transaction: CreditCard,
+  delivery: Truck,
+  completed: CheckCircle2,
+} as const;
 
 export function OrderRoadmap() {
+  const t = useTranslations();
+
+  const steps = STEP_KEYS.map((key, i) => ({
+    key,
+    icon: STEP_ICONS[key],
+    title: t(`Roadmap.steps.${key}.title`),
+    desc: t(`Roadmap.steps.${key}.desc`),
+  }));
+  const stepLabel = t("Roadmap.stepLabel", { n: "{n}" });
+
   return (
     <div className="relative">
       {/* Header */}
       <div className="mb-10 text-center">
         <span className="mb-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold tracking-wide text-accent">
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-          ALUR ORDER
+          {t("Roadmap.badge")}
         </span>
         <h3 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Roadmap <span className="text-accent">Order Produk</span>
+          {t("Roadmap.titlePrefix")} <span className="text-accent">{t("Roadmap.titleAccent")}</span>
         </h3>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          5 tahap sederhana dari pendaftaran hingga pesanan sampai di tangan Anda.
+          {t("Roadmap.subtitle")}
         </p>
       </div>
 
@@ -60,8 +53,8 @@ export function OrderRoadmap() {
           <div className="absolute left-[calc(10%)] right-[calc(10%)] top-6 h-0.5 bg-border/50" />
           <div className="absolute left-[calc(10%)] top-6 h-0.5 w-0 bg-accent/60" style={{ width: "80%" }} />
 
-          {STEPS.map((step, i) => (
-            <StepCard key={step.title} step={step} index={i} total={STEPS.length} layout="horizontal" />
+          {steps.map((step, i) => (
+            <StepCard key={step.key} step={step} index={i} total={steps.length} layout="horizontal" stepLabel={stepLabel} />
           ))}
         </div>
       </div>
@@ -73,8 +66,8 @@ export function OrderRoadmap() {
           <div className="absolute left-3 top-0 h-full w-0.5 bg-border/50" />
           <div className="absolute left-3 top-0 h-0 w-0.5 bg-accent/60" style={{ height: "100%" }} />
 
-          {STEPS.map((step, i) => (
-            <StepCard key={step.title} step={step} index={i} total={STEPS.length} layout="vertical" />
+          {steps.map((step, i) => (
+            <StepCard key={step.key} step={step} index={i} total={steps.length} layout="vertical" stepLabel={stepLabel} />
           ))}
         </div>
       </div>
@@ -82,16 +75,25 @@ export function OrderRoadmap() {
   );
 }
 
+type RoadmapStep = {
+  key: string;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  desc: string;
+};
+
 function StepCard({
   step,
   index,
   total,
   layout,
+  stepLabel,
 }: {
-  step: (typeof STEPS)[number];
+  step: RoadmapStep;
   index: number;
   total: number;
   layout: "horizontal" | "vertical";
+  stepLabel?: string;
 }) {
   const Icon = step.icon;
   const isLast = index === total - 1;
@@ -122,7 +124,7 @@ function StepCard({
 
       {/* Step label + desc */}
       <div className={cn(layout === "horizontal" ? "mt-3" : "absolute left-6 top-1 ml-3")}>
-        <p className="text-xs font-semibold text-muted-foreground">Langkah {index + 1}</p>
+        <p className="text-xs font-semibold text-muted-foreground">{stepLabel} {index + 1}</p>
         <h4 className="mt-0.5 text-sm font-semibold text-foreground">{step.title}</h4>
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{step.desc}</p>
       </div>

@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { Heart, ShoppingCart, Flame, Clock, Droplets, Wind } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -16,10 +17,16 @@ function visualVariant(id: string): "shisha" | "bbq" | "quick" {
   return "quick";
 }
 
+/** Map product id → i18n key. */
+function i18nKey(id: string): "shisha" | "bbq" | "quick" {
+  if (id === "shisha") return "shisha";
+  if (id === "bbq") return "bbq";
+  return "quick";
+}
+
 /**
  * ProductCard — kartu produk utama dengan animasi viewport.
- * Menampilkan: badge kategori, nama, deskripsi, spesifikasi singkat,
- * harga per kg, dan 2 ikon aksi (likes + inquiry).
+ * Nama, deskripsi, spesifikasi & use-case DIVERJEMAHKAN via next-intl.
  */
 export function ProductCard({
   product,
@@ -28,6 +35,13 @@ export function ProductCard({
   product: Product;
   index?: number;
 }) {
+  const t = useTranslations("Product");
+  const key = i18nKey(product.id);
+
+  const name = t(`${key}.name`);
+  const description = t(`${key}.description`);
+  const useCase = t(`${key}.useCase`);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -55,11 +69,7 @@ export function ProductCard({
               className="w-fit bg-accent/10 text-accent hover:bg-accent/20"
             >
               <Flame className="mr-1 h-3 w-3" aria-hidden="true" />
-              {product.name.includes("Shisha")
-                ? "Shisha"
-                : product.name.includes("BBQ")
-                  ? "BBQ"
-                  : "Quick Light"}
+              {key === "shisha" ? "Shisha" : key === "bbq" ? "BBQ" : "Quick Light"}
             </Badge>
             <span className="text-right text-sm font-semibold text-accent">
               {formatRupiah(product.pricePerKg)}
@@ -69,43 +79,28 @@ export function ProductCard({
             </span>
           </div>
           <CardTitle className="mt-2 text-lg font-semibold text-foreground">
-            {product.name}
+            {name}
           </CardTitle>
           <CardDescription className="text-sm leading-relaxed text-muted-foreground">
-            {product.description}
+            {description}
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-3">
           {/* Quick specs grid */}
           <div className="grid grid-cols-2 gap-2 text-xs">
-            <SpecItem icon={<Droplets className="h-3.5 w-3.5" />} label="Ash" value={product.specs.ashContent} />
-            <SpecItem icon={<Clock className="h-3.5 w-3.5" />} label="Burning" value={product.specs.burningTime} />
-            <SpecItem icon={<Wind className="h-3.5 w-3.5" />} label="Smoke" value={product.specs.smoke} />
-            <SpecItem icon={<Flame className="h-3.5 w-3.5" />} label="Warna" value={product.specs.color} />
+            <SpecItem icon={<Droplets className="h-3.5 w-3.5" />} label={t("specTitles.ashContent")} value={t(`specValues.${key}.ashContent`)} />
+            <SpecItem icon={<Clock className="h-3.5 w-3.5" />} label={t("specTitles.burningTime")} value={t(`specValues.${key}.burningTime`)} />
+            <SpecItem icon={<Wind className="h-3.5 w-3.5" />} label={t("specTitles.smoke")} value={t(`specValues.${key}.smoke`)} />
+            <SpecItem icon={<Flame className="h-3.5 w-3.5" />} label={t("specTitles.color")} value={t(`specValues.${key}.color`)} />
           </div>
 
-          {/* Dynamic extras */}
-          {product.specs.extras && (
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(product.specs.extras).map(([key, val]) => (
-                <Badge
-                  key={key}
-                  variant="outline"
-                  className="border-border/60 text-xs text-muted-foreground"
-                >
-                  {key}: {val}
-                </Badge>
-              ))}
-            </div>
-          )}
-
+          {/* Use case */}
           <Separator className="bg-border/50" />
 
-          {/* Use case */}
           <div className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground/80">Kegunaan:</span>{" "}
-            {product.useCase}
+            <span className="font-medium text-foreground/80">{t("useCaseLabel")}</span>{" "}
+            {useCase}
           </div>
         </CardContent>
 
@@ -114,7 +109,7 @@ export function ProductCard({
           <button
             type="button"
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-accent"
-            aria-label={`${product.likes} buyer orders`}
+            aria-label={`${product.likes} ${t("orders")}`}
           >
             <Heart className="h-4 w-4" aria-hidden="true" />
             <span>{product.likes}</span>
@@ -124,10 +119,10 @@ export function ProductCard({
           <a
             href="#kontak"
             className="inline-flex items-center gap-1.5 rounded-md bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent/20"
-            aria-label={`Inquiry ${product.name}`}
+            aria-label={`${t("inquiry")} ${name}`}
           >
             <ShoppingCart className="h-4 w-4" aria-hidden="true" />
-            <span>Inquiry</span>
+            <span>{t("inquiry")}</span>
           </a>
         </CardFooter>
       </Card>

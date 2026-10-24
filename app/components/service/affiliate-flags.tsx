@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { Globe2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 /**
  * AffiliateFlags — auto-scroll marquee (seamless loop, tanpa buttons).
@@ -24,6 +25,7 @@ const AFFILIATE_COUNTRIES = [
 const CARD_WIDTH = 158; // 170 - 12 (incl gap di flex)
 
 export function AffiliateFlags() {
+  const t = useTranslations("Flags");
   const trackRef = useRef<HTMLDivElement>(null);
   const animStateRef = useRef({
     position: 0,
@@ -81,10 +83,10 @@ export function AffiliateFlags() {
       <div className="mb-5 text-center">
         <p className="flex items-center justify-center gap-2 text-sm font-semibold text-foreground">
           <Globe2 className="h-4 w-4 text-accent" aria-hidden="true" />
-          Negara <span className="text-accent">Afiliasi</span>
+          {t("titlePrefix")} <span className="text-accent">{t("titleAccent")}</span>
         </p>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          7 negara buyer aktif &amp; afiliasi ekspor kami
+          {t("subtitle")}
         </p>
       </div>
 

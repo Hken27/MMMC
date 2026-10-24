@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ProductSection } from "./components/product/product-section";
 import { ServiceSection } from "./components/service/service-section";
 import { InquirySection } from "./components/inquiry/inquiry-section";
@@ -16,6 +17,8 @@ export const metadata = {
  * #home → #produk → #service → #kontak + legal footer.
  */
 export default function Home() {
+  const t = useTranslations();
+
   return (
     <div className="flex flex-1 flex-col">
       {/* Hero — #home */}
@@ -25,18 +28,17 @@ export default function Home() {
       >
         <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold tracking-wide text-accent">
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-          ESPOR INDONESIA — B2B
+          {t("Hero.badge")}
         </span>
 
         <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl md:text-6xl">
-          Premium Wood Charcoal{" "}
-          <span className="text-accent">Briquettes</span> for Global Buyers
+          {t("Hero.titlePrefix")}{" "}
+          <span className="text-accent">{t("Hero.titleAccent")}</span>{" "}
+          {t("Hero.titleSuffix")}
         </h1>
 
         <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
-          Konsisten, efisiensi tinggi, dan ramah lingkungan. Charcoal briquettes
-          berkualitas premium untuk pembeli B2B internasional, siap ekspor dari
-          Indonesia.
+          {t("Hero.subtitle")}
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -44,13 +46,13 @@ export default function Home() {
             href="#produk"
             className="inline-flex items-center justify-center rounded-md bg-accent px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-accent-dark hover:shadow-md"
           >
-            Jelajahi Produk
+            {t("Hero.ctaProducts")}
           </Link>
           <Link
             href="#kontak"
             className="inline-flex items-center justify-center rounded-md border border-border bg-surface px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-surface-hover"
           >
-            Hubungi Kami
+            {t("Hero.ctaContact")}
           </Link>
         </div>
       </section>
@@ -64,7 +66,7 @@ export default function Home() {
       {/* Kontak */}
       <InquirySection />
 
-      {/* Legal footer */}
+      {/* Footer */}
       <LegalFooter />
     </div>
   );

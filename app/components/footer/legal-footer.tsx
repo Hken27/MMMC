@@ -1,11 +1,22 @@
-import { LEGAL_LINKS } from "@/lib/contact";
+import { useTranslations } from "next-intl";
 
 /**
  * LegalFooter — baris footer dengan legal links + copyright.
- * "Single page website" → legal halaman link di footer, bukan rute terpisah.
+ * Label & copyright i18n via next-intl.
  */
 export function LegalFooter() {
+  const t = useTranslations("Footer");
   const year = new Date().getFullYear();
+
+  const legalLinks = [
+    { href: "/legal/terms", label: t("legalLinks.terms") },
+    { href: "/legal/privacy", label: t("legalLinks.privacy") },
+    { href: "/legal/terms-conditions", label: t("legalLinks.termsConditions") },
+    { href: "/legal/refund", label: t("legalLinks.refund") },
+    { href: "/legal/sample-logistic", label: t("legalLinks.sampleLogistic") },
+    { href: "/legal/shipping", label: t("legalLinks.shipping") },
+    { href: "/legal/payment", label: t("legalLinks.payment") },
+  ];
 
   return (
     <footer className="border-t border-border/50 bg-background/40">
@@ -15,7 +26,7 @@ export function LegalFooter() {
           aria-label="Legal links"
           className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2"
         >
-          {LEGAL_LINKS.map((link) => (
+          {legalLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -31,7 +42,7 @@ export function LegalFooter() {
 
         {/* Copyright */}
         <p className="text-center text-xs text-muted-foreground/80">
-          © {year} CMMM — Premium Wood Charcoal Briquettes. All rights reserved.
+          {t("copyright", { year })}
         </p>
       </div>
     </footer>

@@ -1,0 +1,283 @@
+{
+  "Common": {
+    "brand": "CMMM",
+    "tagline": "Premium Wood Charcoal Briquettes Exporter",
+    "login": "Sign In",
+    "register": "Sign Up",
+    "chooseLanguage": "Choose language",
+    "en": "English",
+    "id": "Indonesia",
+    "ar": "العربية",
+    "zh": "中文",
+    "de": "Deutsch",
+    "ru": "Русский",
+    "es": "Español"
+  },
+  "Nav": {
+    "home": "Home",
+    "products": "Products",
+    "service": "Service",
+    "contact": "Contact"
+  },
+  "Hero": {
+    "badge": "INDONESIA EXPORT — B2B",
+    "titlePrefix": "Premium Wood Charcoal",
+    "titleAccent": "Briquettes",
+    "titleSuffix": "for Global Buyers",
+    "subtitle": "Consistent, high-efficiency, and eco-friendly. Premium wood charcoal briquettes for international B2B buyers, export-ready from Indonesia.",
+    "ctaProducts": "Explore Products",
+    "ctaContact": "Contact Us"
+  },
+  "Catalog": {
+    "badge": "PRODUCT CATALOG",
+    "titlePrefix": "Charcoal Briquettes",
+    "titleAccent": "Featured",
+    "subtitle": "Three premium variants ready to export: Shisha, BBQ, and Quick Lighting. Consistent quality, competitive pricing, flexible MOQ."
+  },
+  "Product": {
+    "shisha": {
+      "name": "Shisha Charcoal",
+      "description": "Premium shisha charcoal for hookah/kalood. Dense, long-lasting, odorless & smokeless.",
+      "useCase": "Shisha lounge, hookah bar, kalood rental, personal hookah"
+    },
+    "bbq": {
+      "name": "BBQ Charcoal",
+      "description": "Premium wood charcoal for BBQ restaurants, catering, and home grilling. Stable fire, low ash, authentic food flavor.",
+      "useCase": "BBQ restaurants, catering, home grilling, outdoor events"
+    },
+    "quick": {
+      "name": "Quick Lighting",
+      "description": "Fast-lighting charcoal for daily cooking and portable stoves. Lights in 3 seconds.",
+      "useCase": "Portable stoves, household cooking, food stalls, street food"
+    },
+    "specTitles": {
+      "ashContent": "Ash Content",
+      "color": "Color",
+      "burningTime": "Burning Time",
+      "odor": "Odor",
+      "smoke": "Smoke"
+    },
+    "specValues": {
+      "shisha": {
+        "ashContent": "< 4%",
+        "color": "Deep black",
+        "burningTime": "45–60 min",
+        "odor": "No odor",
+        "smoke": "No smoke",
+        "extras": {
+          "heatOutput": "Stable & consistent",
+          "shape": "Cube / Round"
+        }
+      },
+      "bbq": {
+        "ashContent": "< 6%",
+        "color": "Dark brown",
+        "burningTime": "60–90 min",
+        "odor": "No odor",
+        "smoke": "Minimal smoke",
+        "extras": {
+          "heatOutput": "High & even",
+          "shape": "Stick / Lump"
+        }
+      },
+      "quick": {
+        "ashContent": "< 8%",
+        "color": "Grayish black",
+        "burningTime": "30–45 min",
+        "odor": "No odor",
+        "smoke": "Minimal smoke",
+        "extras": {
+          "ignitionTime": "< 3 seconds",
+          "shape": "Cube / Pillow"
+        }
+      }
+    },
+    "extrasTitles": {
+      "heatOutput": "Heat output",
+      "ignitionTime": "Ignition time",
+      "shape": "Shape"
+    },
+    "useCaseLabel": "Use case",
+    "orders": "orders",
+    "inquiry": "Inquiry",
+    "deliveryLabel": "Delivery & Documents",
+    "domestic": "Domestic",
+    "international": "International",
+    "shippingNote": "* Self-managed shipping or full billing",
+    "legalDocs": "Legal Documents",
+    "moq": {
+      "shisha": [
+        "18 ft container (~12 tons)",
+        "20 ft container (~18 tons)",
+        "50–100 kg (sample order)"
+      ],
+      "bbq": [
+        "18 ft container (~14 tons)",
+        "20 ft container (~20 tons)",
+        "100–500 kg (wholesale)"
+      ],
+      "quick": [
+        "18 ft container (~16 tons)",
+        "20 ft container (~22 tons)",
+        "50–100 kg (sample order)"
+      ]
+    }
+  },
+  "Order": {
+    "configTitle": "Order Configuration",
+    "chooseProduct": "Choose Category",
+    "delivery": "Delivery Type",
+    "domestic": "Domestic",
+    "international": "International",
+    "moq": "MOQ (Minimum Order Quantity)",
+    "packaging": "Packaging",
+    "shipping": "Shipping Options",
+    "quantity": "Quantity (kg)",
+    "subtotal": "Subtotal",
+    "sendInquiry": "Send Inquiry Now",
+    "completeAll": "Complete all selections (MOQ, Packaging, Shipping, Qty) first.",
+    "priceLabel": "Price",
+    "pricePerKg": "Price per kg",
+    "qtyPlaceholder": "e.g.: 1000",
+    "loginRequired": "Login required to submit your order.",
+    "loginGate": "Please register or log in to your account to send an inquiry.",
+    "masterBox": "Master Box",
+    "miniBox": "Mini Box",
+    "specialBox": "Special Box",
+    "unitKg": "kg",
+    "unitGram": "grams",
+    "unitTon": "tons"
+  },
+  "Service": {
+    "badge": "OUR SERVICE",
+    "titlePrefix": "End-to-End",
+    "titleAccent": "Export",
+    "subtitle": "From account signup to order delivery — one team, one responsibility."
+  },
+  "Roadmap": {
+    "badge": "ORDER FLOW",
+    "titlePrefix": "Order Product",
+    "titleAccent": "Roadmap",
+    "subtitle": "5 simple steps from signup to order delivered at your door.",
+    "stepLabel": "Step {n}",
+    "steps": {
+      "login": {
+        "title": "Login Account",
+        "desc": "Register or sign in to your buyer account to start ordering."
+      },
+      "order": {
+        "title": "Order Product",
+        "desc": "Choose product, set MOQ, packaging, and quantity per your needs."
+      },
+      "transaction": {
+        "title": "Transaction",
+        "desc": "Pay per invoice. Various payment methods available."
+      },
+      "delivery": {
+        "title": "Delivery",
+        "desc": "Shipping via international or domestic logistics per your choice."
+      },
+      "completed": {
+        "title": "Order Completed",
+        "desc": "Order successfully received. We're ready for your next order."
+      }
+    },
+    "orderProducts": "Order Product"
+  },
+  "Tracking": {
+    "badge": "ORDER TRACKING",
+    "titlePrefix": "Track Your",
+    "titleAccent": "Order",
+    "titleSuffix": "",
+    "placeholder": "Enter Order ID",
+    "search": "Search",
+    "orderId": "Order ID",
+    "dynamic": "Dynamic tracking system available in the next phase.",
+    "dynamicHelp": "For now, please contact our team via WhatsApp or email."
+  },
+  "Certification": {
+    "badge": "CERTIFICATIONS",
+    "titlePrefix": "Company",
+    "titleAccent": "Certifications",
+    "subtitle": "Quality and compliance standards we hold for international export.",
+    "items": {
+      "iso": {
+        "name": "ISO 9001:2015",
+        "desc": "International quality management system for charcoal briquettes."
+      },
+      "msds": {
+        "name": "MSDS",
+        "desc": "Material Safety Data Sheet — material safety for export products."
+      },
+      "coo": {
+        "name": "COO / SKA",
+        "desc": "Certificate of Origin — origin certificate for Indonesian products."
+      },
+      "fumigasi": {
+        "name": "Fumigation",
+        "desc": "Wood packaging fumigation certificate for international standards."
+      }
+    },
+    "viewDoc": "View Document",
+    "later": "Available in the next phase"
+  },
+  "Flags": {
+    "titlePrefix": "Affiliate",
+    "titleAccent": "Countries",
+    "subtitle": "7 active buyer countries & our export affiliates"
+  },
+  "Contact": {
+    "badge": "CONTACT US",
+    "titlePrefix": "Send Your",
+    "titleAccent": "Inquiry",
+    "titleSuffix": "",
+    "subtitle": "Need large volume, special packaging, or specific target countries? Tell us your needs — our team is ready to help.",
+    "headOffice": "Head Office",
+    "headOfficeValue": "Pasuruan, East Java, Indonesia",
+    "email": "Email",
+    "whatsapp": "WhatsApp",
+    "hours": "Operational Hours",
+    "hoursWeek": "Monday – Friday",
+    "hoursWeekTime": "09.00 – 16.00 WIB",
+    "hoursWeekend": "Saturday – Sunday",
+    "hoursWeekendTime": "08.00 – 13.00 WIB",
+    "scanViaLabel": "Scan via"
+  },
+  "Inquiry": {
+    "name": "Full Name",
+    "namePlaceholder": "Ahmad Fauzi",
+    "email": "Email",
+    "emailPlaceholder": "buyer@company.com",
+    "company": "Company",
+    "companyPlaceholder": "PT. Contoh Internasional",
+    "product": "Product",
+    "productPlaceholder": "Select product",
+    "qty": "Qty (kg)",
+    "qtyPlaceholder": "e.g.: 1000",
+    "message": "Message / Special Requirements",
+    "messagePlaceholder": "Tell us your needs: volume, target country, special packaging, etc.",
+    "submit": "Send Inquiry",
+    "errNameRequired": "Name is required",
+    "errNameMin": "Name must be at least 3 characters",
+    "errEmailRequired": "Email is required",
+    "errEmailFormat": "Invalid email format",
+    "errCompanyRequired": "Company is required",
+    "errProductRequired": "Select a product",
+    "errQtyNumber": "Qty must be a number",
+    "errMessageMax": "Message max 2000 characters",
+    "loginGate": "Please register or log in to your account to send an inquiry.",
+    "honeypotWebsite": "Website"
+  },
+  "Footer": {
+    "copyright": "© {year} CMMM — Premium Wood Charcoal Briquettes. All rights reserved.",
+    "legalLinks": {
+      "terms": "Term Service",
+      "privacy": "Privacy Policy",
+      "termsConditions": "Terms and Condition",
+      "refund": "Return and Refund",
+      "sampleLogistic": "Sample and Logistic",
+      "shipping": "Shipping",
+      "payment": "Payment"
+    }
+  }
+}

@@ -1,17 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { AnimatePresence } from "motion/react";
-import { Menu, X, Globe, ChevronDown } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { Menu, X } from "lucide-react";
 import { NavbarMobileMenu } from "./navbar-mobile-menu";
 import { DesktopNavLinks } from "./desktop-nav-links";
+import { LanguageSwitch } from "../ui/language-switch";
+import type { NavLink } from "./navbar";
 
 /**
  * NavbarClient — layer interaktif navbar (single-page website).
- * IntersectionObserver lacak section aktif berdasarkan ID (#home, #produk, etc),
- * smooth scroll via anchor href. Tidak ada usePathname — semua di `/` page.
+ * Animasi smooth pada initial load + interactive states.
+ * navLinks di-pass dari server component (i18n already-resolved).
  */
-export function NavbarClient() {
+export function NavbarClient({ navLinks }: { navLinks: NavLink[] }) {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("#home");
 
@@ -63,47 +65,63 @@ export function NavbarClient() {
   return (
     <>
       {/* Desktop links + actions — hidden di md ke bawah */}
-      <div className="hidden items-center gap-4 md:flex">
-        <DesktopNavLinks isActive={isActive} />
-        <div className="hidden items-center gap-2 lg:flex">
-          <div className="group relative">
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-foreground/70 transition-colors hover:bg-surface-hover hover:text-foreground"
-            >
-              <Globe className="h-4 w-4" aria-hidden="true" />
-              <span>EN</span>
-              <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
-            </button>
-          </div>
-          <a
+      <motion.div
+        className="hidden items-center gap-6 md:flex"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
+        <DesktopNavLinks navLinks={navLinks} isActive={isActive} />
+        <div className="hidden items-center gap-3 lg:flex">
+          {/* Language switch — dropdown bahasa */}
+          <LanguageSwitch />
+
+          {/* Login Button */}
+          <motion.a
             href="/login"
-            className="inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-accent-dark hover:shadow-md"
+            className="group relative inline-flex items-center justify-center rounded-md bg-gradient-to-r from-accent to-accent/80 px-6 py-2.5 text-sm font-semibold text-white shadow-sm overflow-hidden"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
-            Masuk
-          </a>
+            <span className="relative">
+              Masuk
+            </span>
+          </motion.a>
         </div>
-      </div>
+      </motion.div>
 
       {/* Hamburger toggle — hanya di mobile */}
-      <button
+      <motion.button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls="mobile-nav"
         aria-label={open ? "Tutup menu" : "Buka menu"}
-        className="relative z-[60] inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground/70 transition-colors hover:bg-surface-hover hover:text-foreground md:hidden"
+        className="relative z-[60] inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground/70 transition-all duration-200 hover:bg-surface-hover hover:text-foreground md:hidden"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
       >
-        {open ? (
-          <X className="h-5 w-5" aria-hidden="true" />
-        ) : (
-          <Menu className="h-5 w-5" aria-hidden="true" />
-        )}
-      </button>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={open ? "close" : "open"}
+            initial={{ rotate: -90, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            exit={{ rotate: 90, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {open ? (
+              <X className="h-5 w-5" aria-hidden="true" />
+            ) : (
+              <Menu className="h-5 w-5" aria-hidden="true" />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </motion.button>
 
       {/* Mobile drawer — animasi Motion, dimount via AnimatePresence */}
       <AnimatePresence>
-        {open && <NavbarMobileMenu onClose={close} isActive={isActive} />}
+        {open && <NavbarMobileMenu navLinks={navLinks} onClose={close} isActive={isActive} />}
       </AnimatePresence>
     </>
   );

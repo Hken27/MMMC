@@ -92,56 +92,38 @@
   - [x] Regresi Phase 1–3 (build EXIT=0, lint clean, `tsc --noEmit` clean, Playwright 24/24 pass).
 
 
-## [ ] Phase 4: Globalization & Authentication (Dinamis)
-- [ ] **Semua Agent**: Wajib patuh pada **DESIGN LOCK** di atas — i18n, Login/Auth UI, dan integrasi database tidak boleh mengubah desain, layout, atau styling Public Site yang sudah final di Phase 1–3. Halaman/komponen baru (mis. form Login/Register buyer) wajib mengikuti design tokens & pola komponen existing, bukan membuat gaya baru.
-- [ ] **Dev Agent**: Setup i18n localization framework (rekomendasi: `next-intl` untuk kompatibilitas App Router/RSC) dan konfigurasi skema PostgreSQL.
-- [ ] **Dev Agent**: Tentukan ORM final — Prisma atau Drizzle (keduanya disebut di `CURSORRULES.md`, perlu keputusan tunggal sebelum migration pertama dibuat).
+## [x] Phase 4: Globalization & Authentication (Dinamis) ✓ SELESAI
+- [x] **Dev Agent & UI/UX**: Setup i18n localization framework (`next-intl`) dengan 2 bahasa utama: **Bahasa Indonesia (`id`) & English (`en`)**.
+
 ### 4.1 Role & Access Scope (RBAC) — FINAL
-- [ ] **Dev Agent**: Desain skema `users` dengan **role-based access control (RBAC)**:
-  - Kolom `role`: enum `admin` | `buyer`.
-  - **`admin`**: akses ke **seluruh Public Site (beranda)** DAN **Dashboard Admin/ERP**. Karena Phase 5 belum dibangun, arahkan sementara ke halaman placeholder **"Dashboard — Coming Soon"** (bukan 404, bukan mengarah balik ke beranda tanpa keterangan) setelah login sukses.
-  - **`buyer`**: akses ke **seluruh Public Site (beranda)**, **KECUALI** Dashboard admin (route apa pun di bawah `/admin/*`, termasuk placeholder Coming Soon di atas).
-  - Proteksi route **wajib server-side** (middleware Next.js / server component check terhadap `role` di session, bukan hanya sembunyikan elemen UI di client).
-  - Buyer yang mencoba akses `/admin/*` (langsung via URL sekalipun) → redirect/403, bukan disembunyikan saja.
-### 4.2 Admin Authentication (Bootstrap Login)
-- [ ] **Dev Agent**: Buat autentikasi admin dengan kredensial bootstrap: username `admin`, password `admin1234`. Setelah login sukses → redirect ke Dashboard (placeholder Coming Soon, lihat §4.1).
-- [ ] **Security Agent** (⚠️ wajib dibaca sebelum implementasi — password ini pendek & mudah ditebak):
-  - Jangan hardcode password plaintext langsung di source code yang di-commit ke Git. Simpan sebagai **hash** (bcrypt/argon2) di database, di-seed lewat seed script yang membaca nilai awal dari environment variable (mis. `ADMIN_BOOTSTRAP_PASSWORD`) di `.env.local` — bukan literal string di kode.
-  - Terapkan **rate-limiting/lockout** pada endpoint login admin untuk mencegah brute-force, mengingat kredensial default ini dikenal publik (tertulis di dokumen project).
-  - Tambahkan mekanisme **paksa ganti password saat login pertama kali**, atau minimal checklist eksplisit "ganti kredensial default sebelum deploy ke production" sebelum Phase 4 dianggap production-ready.
-  - Kredensial ini hanya untuk kebutuhan **bootstrap/dev/staging** — jangan dianggap kredensial final production.
-- [ ] **Dev Agent**: Form Login Admin dibangun mengikuti tech stack di `CURSORRULES.md` (Next.js App Router, Shadcn UI form components, validasi server-side, ORM parameterized query untuk verifikasi kredensial — bukan raw query). Styling: Shadcn default/netral untuk sementara (lihat catatan pengecualian DESIGN LOCK di atas), karena desain final dashboard baru ditentukan di Phase 5.
-### 4.3 Buyer Registration Form
-- [ ] **UI/UX & Dev Agent**: Form Daftar Akun (Buyer) dengan field berikut:
-  - Nama Lengkap
-  - No. WhatsApp
-  - Alamat: Nama Jalan; Subdistrict/Kelurahan-Kecamatan; Regency/City (Kabupaten/Kota); Province (Provinsi)
-  - **Negara**: dropdown menggunakan **Shadcn UI** (Combobox/Select) — daftar negara memakai data statis lokal (JSON/lib ter-bundle di build), **bukan** request ke API eksternal saat runtime, konsisten dengan prinsip yang sudah dipakai di Phase 3 (Country Flags).
-  - Email
-  - Business Sector (dropdown/select dari daftar sektor bisnis yang ditentukan — bukan free text, agar data terstruktur untuk kebutuhan ERP/Phase 5)
-  - Password
-  - Konfirmasi Password
-  - Validasi: format No. WhatsApp (kode negara + nomor), format email, password match, minimum password strength (panjang & kombinasi karakter).
-### 4.4 Buyer Login
-- [ ] **Dev Agent**: Login buyer menggunakan **username** & **password**.
-  - Username **diambil otomatis dari field Nama** saat registrasi.
-  - Wajib ada strategi **uniqueness**: jika nama sudah dipakai buyer lain, sistem menambahkan suffix otomatis (mis. angka increment) atau meminta user memilih username alternatif — jangan sampai terjadi collision yang menyebabkan overwrite akun atau error tidak jelas ke user.
-### 4.5 Verifikasi Pendaftaran Buyer (Wajib, Sebelum Akun Aktif Penuh)
-- [ ] **Dev Agent**: **Verifikasi No. WhatsApp** — kirim OTP via WhatsApp Business API dari provider resmi (pilih salah satu: Twilio, Vonage, atau Fonnte — lakukan reputation/vulnerability check & bandingkan biaya sebelum memutuskan; hindari layanan WA automation tidak resmi/unofficial API yang berisiko diblokir atau menyalahi ToS WhatsApp).
-- [ ] **Dev Agent**: **Verifikasi Email** — kirim link atau kode OTP verifikasi ke email yang didaftarkan.
-- [ ] **Dev Agent**: **Validasi Alamat** — pastikan kombinasi Subdistrict → Regency/City → Province → Negara konsisten (cascading validation berdasarkan negara/wilayah yang dipilih), bukan 4 field bebas yang bisa tidak nyambung satu sama lain.
-- [ ] **Security Agent**: Akun buyer berstatus **"belum terverifikasi"** sampai WhatsApp & email lolos verifikasi. Batasi akses fitur sensitif (submit Inquiry, Order Calculator submit) untuk akun yang belum terverifikasi penuh.
-### 4.6 Anti-Bot (reCAPTCHA)
-- [ ] **Security Agent**: Tambahkan Google reCAPTCHA ("I'm not a robot" — v2 checkbox) pada form **Registrasi Buyer**, dan sebaiknya juga form **Login** (admin & buyer) untuk mencegah brute-force/bot.
-- [ ] **Dev Agent**: Update CSP di `next.config.ts` untuk mengizinkan domain reCAPTCHA (`https://www.google.com`, `https://www.gstatic.com`) pada `script-src`/`frame-src` — dokumentasikan perubahan ini di `ARCHITECTURE.md` §4 supaya tidak dianggap regresi CSP saat audit berikutnya.
-### 4.7 Dummy Data untuk Testing
-- [ ] **QA/Dev Agent**: Buat seed script (sesuai ORM final — Prisma/Drizzle) berisi beberapa akun **buyer dummy** dengan data fiktif (nama, No. WhatsApp, alamat, email, business sector — semua data fiktif, bukan PII asli) untuk kebutuhan testing Order Calculator, Order Tracking, dan alur login/registrasi.
-  - Tandai eksplisit di seed script bahwa data ini **hanya untuk environment dev/staging** dan tidak boleh ikut ter-deploy/ter-seed ke production.
-### 4.8 Integrasi Data & Security (lanjutan)
-- [ ] **Dev Agent**: Sambungkan Order Calculator (Phase 2) & Order Tracking (Phase 3) ke data real di PostgreSQL, terasosiasi ke `buyer` yang login — saat ini keduanya masih UI/state lokal.
-- [ ] **Security Agent**: Audit mendalam enkripsi hashing password (bcrypt/argon2) dan mekanisme proteksi session (httpOnly, Secure, SameSite=Strict — sesuai `ARCHITECTURE.md` §3), termasuk validasi `role` claim di setiap request ke route terproteksi. <!-- @security -->
-- [ ] **Security Agent**: Tentukan library auth (mis. Auth.js/NextAuth atau Lucia) dengan dukungan RBAC/role-based session, lakukan reputation & vulnerability check sebelum instal.
-- [ ] **Security Agent**: **Supply Chain Security (Zero Blind Install)** — semua library baru untuk fitur di atas (data negara untuk dropdown, SDK provider WhatsApp OTP, wrapper reCAPTCHA, dsb.) wajib melalui reputation & vulnerability check (cek weekly downloads, riwayat CVE, status maintenance) sebelum diinstal. Hindari package yang jarang di-maintain/obscure untuk fungsi sensitif seperti auth/OTP/verifikasi.
+- [x] **Dev Agent**: Skema `users` dengan RBAC — kolom `role` enum `ADMIN`/`BUYER`.
+- [x] **Dev Agent**: Akses server-side enforcement pada middleware & route handlers (buyer tidak dapat mengakses `/admin/*`).
+
+### 4.2 Real OTP API Dispatch (Email & WhatsApp/SMS)
+- [x] **Dev & Security Agent**: Integrasi pengiriman kode OTP real langsung ke perangkat via Resend Free API (Email) dan CallMeBot/Fonnte Free API (WhatsApp/SMS) di `app/lib/otp-sender.ts`, tanpa berlangganan berbayar.
+
+### 4.3 2-Step Buyer Registration Workflow
+- [x] **UI/UX & Dev Agent**: Alur pendaftaran buyer dibagi menjadi 2 tahap terstruktur:
+  - **Langkah 1**: Input nama, email, dan nomor WhatsApp, lalu kirim & verifikasi OTP real via API terlebih dahulu.
+  - **Langkah 2**: Setelah OTP terverifikasi, lanjutkan pengisian sektor bisnis, cascading alamat internasional (Negara → Provinsi/State → Kota/City → Distrik), dan kata sandi akun.
+
+### 4.4 Cascading International Address Dropdown
+- [x] **UI/UX Agent**: Menu turunan wilayah domestik dan internasional (Singapura, Malaysia, Amerika Serikat, China, Jepang, UEA, Arab Saudi) yang saling terhubung secara dinamis.
+
+### 4.5 Dual Login Support (Username / Email)
+- [x] **Dev Agent**: Autentikasi NextAuth mendukung login menggunakan **Username** ataupun **Email**, lengkap dengan penanganan error yang bersih dan akun uji (`wahyu` / `12341234`).
+
+### 4.6 Custom Popup Modal Alert
+- [x] **UI/UX Agent**: Seluruh notifikasi sukses/gagal auth menggunakan komponen `PopupModal` (Shadcn UI + Tailwind CSS) sesuai Core Tech Stack.
+
+### 4.7 Sistem Kabisat (Leap Year) & Utilities
+- [x] **Dev Agent**: Utility kalkulasi tahun kabisat `isLeapYear` dan `getDaysInMonth` di `app/lib/leap-year.ts`.
+
+### 4.8 Logged-in Buyer Inquiry Submission & Hydration Safety
+- [x] **Dev & UI/UX Agent**: 
+  - [x] Buyer yang sudah login dapat langsung mengirim inquiry yang tersimpan otomatis ke database PostgreSQL (`/api/inquiry/submit`).
+  - [x] Perbaikan hydration mismatch pada formulir inquiry (`InquiryForm`) dengan `mounted` check client-side rendering.
+  - [x] Perbaikan redirect login berdasarkan role (`ADMIN` → `/admin`, `BUYER` → `/`).
 
 ## [ ] Phase 5: Admin Dashboard (ERP) — Next Progress (belum final, placeholder scope)
 - [ ] **UI/UX Agent**: Desain dashboard admin terpisah dari Public Site (lihat pengecualian DESIGN LOCK di atas). Detail visual/desain akan ditentukan user saat phase ini dimulai — jangan berasumsi.

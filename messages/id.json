@@ -1,0 +1,283 @@
+{
+  "Common": {
+    "brand": "CMMM",
+    "tagline": "Eksportir Arang Briket Premium",
+    "login": "Masuk",
+    "register": "Daftar",
+    "chooseLanguage": "Pilih bahasa",
+    "en": "English",
+    "id": "Indonesia",
+    "ar": "العربية",
+    "zh": "中文",
+    "de": "Deutsch",
+    "ru": "Русский",
+    "es": "Español"
+  },
+  "Nav": {
+    "home": "Beranda",
+    "products": "Produk",
+    "service": "Service",
+    "contact": "Kontak"
+  },
+  "Hero": {
+    "badge": "ESKPOR INDONESIA — B2B",
+    "titlePrefix": "Premium Wood Charcoal",
+    "titleAccent": "Briquettes",
+    "titleSuffix": "untuk Pembeli Global",
+    "subtitle": "Konsisten, efisiensi tinggi, dan ramah lingkungan. Charcoal briquettes berkualitas premium untuk pembeli B2B internasional, siap ekspor dari Indonesia.",
+    "ctaProducts": "Jelajahi Produk",
+    "ctaContact": "Hubungi Kami"
+  },
+  "Catalog": {
+    "badge": "KATALOG PRODUK",
+    "titlePrefix": "Charcoal Briquettes",
+    "titleAccent": "Unggulan",
+    "subtitle": "Tiga varian premium yang siap ekspor: Shisha, BBQ, dan Quick Lighting. Kualitas konsisten, harga kompetitif, MOQ fleksibel."
+  },
+  "Product": {
+    "shisha": {
+      "name": "Shisha Charcoal",
+      "description": "Premium shisha charcoal untuk penggunaan hookah/kalood. Padat, tahan lama, tidak berbau & tanpa asap.",
+      "useCase": "Shisha lounge, hookah bar, kalood rental, personal hookah"
+    },
+    "bbq": {
+      "name": "BBQ Charcoal",
+      "description": "Wood charcoal premium untuk BBQ restoran, catering, dan home grilling. Api stabil, abu rendah, rasa makanan autentik.",
+      "useCase": "BBQ restoran, catering, home grilling, outdoor event"
+    },
+    "quick": {
+      "name": "Quick Lighting",
+      "description": "Arang cepat menyala untuk kebutuhan memasak sehari-hari dan kompor portable. Nyala cepat dalam 3 detik.",
+      "useCase": "Kompor portable, memasak rumah tangga, warung, street food"
+    },
+    "specTitles": {
+      "ashContent": "Ash Content",
+      "color": "Warna",
+      "burningTime": "Burning Time",
+      "odor": "Bau",
+      "smoke": "Asap"
+    },
+    "specValues": {
+      "shisha": {
+        "ashContent": "< 4%",
+        "color": "Hitam pekat",
+        "burningTime": "45–60 menit",
+        "odor": "Tidak berbau",
+        "smoke": "Tanpa asap",
+        "extras": {
+          "heatOutput": "Stabil & konsisten",
+          "shape": "Cube / Round"
+        }
+      },
+      "bbq": {
+        "ashContent": "< 6%",
+        "color": "Coklat gelap",
+        "burningTime": "60–90 menit",
+        "odor": "Tidak berbau",
+        "smoke": "Asap minimal",
+        "extras": {
+          "heatOutput": "Tinggi & merata",
+          "shape": "Stick / Lump"
+        }
+      },
+      "quick": {
+        "ashContent": "< 8%",
+        "color": "Hitam keabu-abuan",
+        "burningTime": "30–45 menit",
+        "odor": "Tidak berbau",
+        "smoke": "Asap minimal",
+        "extras": {
+          "ignitionTime": "< 3 detik",
+          "shape": "Cube / Pillow"
+        }
+      }
+    },
+    "extrasTitles": {
+      "heatOutput": "Heat output",
+      "ignitionTime": "Waktu menyala",
+      "shape": "Bentuk"
+    },
+    "useCaseLabel": "Kegunaan",
+    "orders": "pesanan",
+    "inquiry": "Inquiry",
+    "deliveryLabel": "Delivery & Dokumen",
+    "domestic": "Domestik",
+    "international": "Luar Negeri",
+    "shippingNote": "* Ongkir mandiri atau tagihan menyeluruh",
+    "legalDocs": "Dokumen Legalitas",
+    "moq": {
+      "shisha": [
+        "18 ft container (~12 ton)",
+        "20 ft container (~18 ton)",
+        "50–100 kg (pesanan contoh)"
+      ],
+      "bbq": [
+        "18 ft container (~14 ton)",
+        "20 ft container (~20 ton)",
+        "100–500 kg (grosir)"
+      ],
+      "quick": [
+        "18 ft container (~16 ton)",
+        "20 ft container (~22 ton)",
+        "50–100 kg (pesanan contoh)"
+      ]
+    }
+  },
+  "Order": {
+    "configTitle": "Konfigurasi Order",
+    "chooseProduct": "Pilih Kategori",
+    "delivery": "Jenis Pengiriman",
+    "domestic": "Domestik",
+    "international": "Luar Negeri",
+    "moq": "MOQ (Minimum Order Quantity)",
+    "packaging": "Packing",
+    "shipping": "Opsi Pengiriman",
+    "quantity": "Jumlah (kg)",
+    "subtotal": "Subtotal",
+    "sendInquiry": "Kirim Inquiry Sekarang",
+    "completeAll": "Lengkapi semua pilihan (MOQ, Packaging, Shipping, Qty) terlebih dahulu.",
+    "priceLabel": "Harga",
+    "pricePerKg": "Harga per kg",
+    "qtyPlaceholder": "Misal: 1000",
+    "loginRequired": "Membutuhkan login untuk mengirim order.",
+    "loginGate": "Daftar Atau Login Akun terlebih dahulu untuk mengirim inquiry.",
+    "masterBox": "Master Box",
+    "miniBox": "Mini Box",
+    "specialBox": "Special Box",
+    "unitKg": "kg",
+    "unitGram": "gram",
+    "unitTon": "ton"
+  },
+  "Service": {
+    "badge": "LAYANAN KAMI",
+    "titlePrefix": "Ekspor",
+    "titleAccent": "End-to-End",
+    "subtitle": "Dari pendaftaran akun hingga pesanan sampai di tangan Anda — satu tim, satu tanggung jawab."
+  },
+  "Roadmap": {
+    "badge": "ALUR ORDER",
+    "titlePrefix": "Roadmap",
+    "titleAccent": "Order Produk",
+    "subtitle": "5 tahap sederhana dari pendaftaran hingga pesanan sampai di tangan Anda.",
+    "stepLabel": "Langkah {n}",
+    "steps": {
+      "login": {
+        "title": "Login Account",
+        "desc": "Daftar atau masuk akun buyer untuk memulai proses order."
+      },
+      "order": {
+        "title": "Order Product",
+        "desc": "Pilih produk, tentukan MOQ, packaging, dan quantity sesuai kebutuhan."
+      },
+      "transaction": {
+        "title": "Transaction",
+        "desc": "Lakukan pembayaran sesuai invoice. Tersedia berbagai metode pembayaran."
+      },
+      "delivery": {
+        "title": "Delivery",
+        "desc": "Pengiriman via logistik internasional atau domestik sesuai pilihan Anda."
+      },
+      "completed": {
+        "title": "Order Completed",
+        "desc": "Pesanan berhasil diterima. Kami siap membantu order selanjutnya."
+      }
+    },
+    "orderProducts": "Order Product"
+  },
+  "Tracking": {
+    "badge": "ORDER TRACKING",
+    "titlePrefix": "Lacak",
+    "titleAccent": "Pesanan",
+    "titleSuffix": "Anda",
+    "placeholder": "Masukkan Order ID",
+    "search": "Cari",
+    "orderId": "Order ID",
+    "dynamic": "Sistem tracking dinamis tersedia di fase berikutnya.",
+    "dynamicHelp": "Untuk saat ini, silakan hubungi tim kami melalui WhatsApp atau email."
+  },
+  "Certification": {
+    "badge": "SERTIFIKASI",
+    "titlePrefix": "Company",
+    "titleAccent": "Certifications",
+    "subtitle": "Standar kualitas dan legalitas yang kami pegang untuk ekspor internasional.",
+    "items": {
+      "iso": {
+        "name": "ISO 9001:2015",
+        "desc": "Sistem manajemen mutu internasional untuk produk arang briket."
+      },
+      "msds": {
+        "name": "MSDS",
+        "desc": "Material Safety Data Sheet — keamanan material produk untuk ekspor."
+      },
+      "coo": {
+        "name": "COO / SKA",
+        "desc": "Certificate of Origin — surat keterangan asal produk Indonesia."
+      },
+      "fumigasi": {
+        "name": "Fumigasi",
+        "desc": "Sertifikat fumigasi pengemasan kayu untuk standar internasional."
+      }
+    },
+    "viewDoc": "Lihat Dokumen",
+    "later": "Tersedia di fase berikutnya"
+  },
+  "Flags": {
+    "titlePrefix": "Negara",
+    "titleAccent": "Afiliasi",
+    "subtitle": "7 negara buyer aktif &amp; afiliasi ekspor kami"
+  },
+  "Contact": {
+    "badge": "KONTAK KAMI",
+    "titlePrefix": "Kirim",
+    "titleAccent": "Inquiry",
+    "titleSuffix": "Anda",
+    "subtitle": "Butuh volume besar, packaging spesial, atau target negara tertentu? Ceritakan kebutuhan Anda, tim kami siap membantu.",
+    "headOffice": "Head Office",
+    "headOfficeValue": "Pasuruan, Jawa Timur, Indonesia",
+    "email": "Email",
+    "whatsapp": "WhatsApp",
+    "hours": "Jam Operasional",
+    "hoursWeek": "Senin – Jumat",
+    "hoursWeekTime": "09.00 – 16.00 WIB",
+    "hoursWeekend": "Sabtu – Minggu",
+    "hoursWeekendTime": "08.00 – 13.00 WIB",
+    "scanViaLabel": "Scan via"
+  },
+  "Inquiry": {
+    "name": "Nama Lengkap",
+    "namePlaceholder": "Ahmad Fauzi",
+    "email": "Email",
+    "emailPlaceholder": "buyer@perusahaan.com",
+    "company": "Perusahaan",
+    "companyPlaceholder": "PT. Contoh Internasional",
+    "product": "Produk",
+    "productPlaceholder": "Pilih produk",
+    "qty": "Qty (kg)",
+    "qtyPlaceholder": "Misal: 1000",
+    "message": "Pesan / Kebutuhan Khusus",
+    "messagePlaceholder": "Ceritakan kebutuhan Anda: volume, target negara, packaging spesial, dll.",
+    "submit": "Kirim Inquiry",
+    "errNameRequired": "Nama wajib diisi",
+    "errNameMin": "Nama minimal 3 karakter",
+    "errEmailRequired": "Email wajib diisi",
+    "errEmailFormat": "Format email tidak valid",
+    "errCompanyRequired": "Perusahaan wajib diisi",
+    "errProductRequired": "Pilih produk",
+    "errQtyNumber": "Qty harus angka",
+    "errMessageMax": "Pesan maksimal 2000 karakter",
+    "loginGate": "Daftar Atau Login Akun terlebih dahulu untuk mengirim inquiry.",
+    "honeypotWebsite": "Website"
+  },
+  "Footer": {
+    "copyright": "© {year} CMMM — Premium Wood Charcoal Briquettes. All rights reserved.",
+    "legalLinks": {
+      "terms": "Term Service",
+      "privacy": "Privacy Policy",
+      "termsConditions": "Terms and Condition",
+      "refund": "Return and Refund",
+      "sampleLogistic": "Sample and Logistic",
+      "shipping": "Shipping",
+      "payment": "Payment"
+    }
+  }
+}

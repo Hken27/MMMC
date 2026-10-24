@@ -24,6 +24,11 @@ model User {
   whatsappVerified  Boolean  @default(false)
   emailVerified     Boolean  @default(false)
 
+  // Security & Lockout
+  failedLoginAttempts Int    @default(0)
+  lockedUntil         DateTime?
+  mustChangePassword  Boolean @default(false)
+
   // Profile data (for both admin & buyer, but mainly buyer)
   profile           UserProfile?
 

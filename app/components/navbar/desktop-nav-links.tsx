@@ -1,6 +1,6 @@
 "use client";
 
-import { NAV_LINKS } from "./navbar";
+import type { NavLink } from "./navbar";
 
 /**
  * DesktopNavLinks — baris link navigasi untuk layar ≥ md.
@@ -8,13 +8,15 @@ import { NAV_LINKS } from "./navbar";
  * Active state di-drive oleh isActive dari parent agar state tunggal.
  */
 export function DesktopNavLinks({
+  navLinks,
   isActive,
 }: {
+  navLinks: NavLink[];
   isActive: (href: string) => boolean;
 }) {
   return (
     <>
-      {NAV_LINKS.map((link) => {
+      {navLinks.map((link) => {
         const active = isActive(link.href);
         return (
           <a

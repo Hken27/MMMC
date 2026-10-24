@@ -10,15 +10,17 @@ import {
   Scale,
   Shield,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/lib/products";
 
 /**
  * ProductSpecs — expandable detail spesifikasi produk.
- * Berisi 3 tab: MOQ, Packaging, Delivery.
- * Setiap tab di-klik expand/collapse dengan animasi slide.
+ * Berisi 3 tab: MOQ, Packaging, Delivery. Label i18n via next-intl.
  */
 export function ProductSpecs({ product }: { product: Product }) {
+  const t = useTranslations("Product");
+  const to = useTranslations("Order");
   const [openTab, setOpenTab] = useState<string | null>(null);
 
   const toggle = (tab: string) =>
@@ -46,24 +48,24 @@ export function ProductSpecs({ product }: { product: Product }) {
       </SpecToggle>
 
       <SpecToggle
-        label="Packaging"
+        label={to("packaging")}
         icon={<Package className="h-4 w-4" />}
         isOpen={openTab === "packaging"}
         onToggle={() => toggle("packaging")}
       >
         <div className="space-y-3">
           <PackagingGroup
-            title="Master Box"
+            title={to("masterBox")}
             items={product.packaging.masterBox.map((w) => `${w} kg`)}
           />
           <PackagingGroup
-            title="Mini Box"
+            title={to("miniBox")}
             items={product.packaging.miniBox.map((w) =>
               w >= 1000 ? `${w / 1000} kg` : `${w} gram`
             )}
           />
           <PackagingGroup
-            title="Special Box"
+            title={to("specialBox")}
             items={product.packaging.specialBox.map((w) =>
               w >= 1000 ? `${w / 1000} ton` : `${w} kg`
             )}
@@ -72,7 +74,7 @@ export function ProductSpecs({ product }: { product: Product }) {
       </SpecToggle>
 
       <SpecToggle
-        label="Delivery & Dokumen"
+        label={t("deliveryLabel")}
         icon={<Truck className="h-4 w-4" />}
         isOpen={openTab === "delivery"}
         onToggle={() => toggle("delivery")}
@@ -81,7 +83,7 @@ export function ProductSpecs({ product }: { product: Product }) {
           {/* Domestic */}
           <div>
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-foreground/60">
-              Domestik
+              {t("domestic")}
             </p>
             <div className="flex flex-wrap gap-2">
               {product.delivery.domestic.map((c) => (
@@ -94,14 +96,14 @@ export function ProductSpecs({ product }: { product: Product }) {
               ))}
             </div>
             <p className="mt-1.5 text-xs text-muted-foreground/70">
-              * Ongkir mandiri atau tagihan menyeluruh
+              {t("shippingNote")}
             </p>
           </div>
 
           {/* International */}
           <div>
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-foreground/60">
-              Luar Negeri
+              {t("international")}
             </p>
             <div className="flex flex-wrap gap-2">
               {product.delivery.international.map((c) => (
@@ -119,7 +121,7 @@ export function ProductSpecs({ product }: { product: Product }) {
           <div>
             <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-foreground/60">
               <Shield className="h-3.5 w-3.5" aria-hidden="true" />
-              Dokumen Legalitas
+              {t("legalDocs")}
             </p>
             <div className="flex flex-wrap gap-2">
               {product.delivery.docs.map((doc) => (

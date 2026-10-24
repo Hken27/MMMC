@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { PopupModal, DialogType } from "@/app/components/ui/popup-modal";
 import {
   Select,
   SelectContent,
@@ -16,37 +18,47 @@ import {
 } from "@/components/ui/select";
 import { PRODUCTS } from "@/lib/products";
 
-/**
- * InquiryForm — form kontak B2B dengan honeypot anti-spam.
- *
- * Security:
- * - Honeypot field tersembunyi (bot mengisi → tolak submit)
- * - Tidak pakai library eksternal (React 19 form actions native)
- * - Validasi client-side sebelum submit
- *
- * Login gating (Phase 3+): sampai autentikasi asli tersedia (Phase 6),
- * submit → alert + redirect /login.
- */
 export function InquiryForm() {
   const router = useRouter();
+  const t = useTranslations("Inquiry");
+  const tp = useTranslations("Product");
 
-  // Client-side validation
+  const [mounted, setMounted] = useState(false);
+  const [session, setSession] = useState<any>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    type: DialogType;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    type: 'info',
+  });
+
+  useEffect(() => {
+    setMounted(true);
+    fetch('/api/auth/session')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.user) {
+          setSession(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
-
     const data = new FormData(form);
 
-    // Honeypot check — bot terdeteksi kalau field tersembunyi "website" terisi.
-    // Dibaca langsung dari FormData (uncontrolled) agar tahan terhadap bot yang
-    // set DOM value tanpa melewati event React.
     const website = String(data.get("website") ?? "").trim();
-    if (website) {
-      // Silent block: bot tidak menerima sinyal sukses/gagal, data tidak dikirim.
-      return;
-    }
+    if (website) return;
+
     const nama = String(data.get("nama") ?? "").trim();
     const email = String(data.get("email") ?? "").trim();
     const perusahaan = String(data.get("perusahaan") ?? "").trim();
@@ -54,53 +66,102 @@ export function InquiryForm() {
     const qty = String(data.get("qty") ?? "").trim();
     const pesan = String(data.get("pesan") ?? "").trim();
 
-    // Validation
     const errs: Record<string, string> = {};
-    if (!nama) errs.nama = "Nama wajib diisi";
-    if (nama && nama.length < 3) errs.nama = "Nama minimal 3 karakter";
-    if (!email) errs.email = "Email wajib diisi";
+    if (!nama) errs.nama = t("errNameRequired");
+    if (nama && nama.length < 3) errs.nama = t("errNameMin");
+    if (!email) errs.email = t("errEmailRequired");
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      errs.email = "Format email tidak valid";
-    if (!perusahaan) errs.perusahaan = "Perusahaan wajib diisi";
-    if (!produk) errs.produk = "Pilih produk";
-    if (qty && isNaN(Number(qty))) errs.qty = "Qty harus angka";
-    if (pesan.length > 2000) errs.pesan = "Pesan maksimal 2000 karakter";
+      errs.email = t("errEmailFormat");
+    if (!perusahaan) errs.perusahaan = t("errCompanyRequired");
+    if (!produk) errs.produk = t("errProductRequired");
+    if (qty && isNaN(Number(qty))) errs.qty = t("errQtyNumber");
+    if (pesan.length > 2000) errs.pesan = t("errMessageMax");
 
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    // Skenario 3 (Phase 3+): login gating — hardcode belum-login
-    // sampai sistem autentikasi otentik tersedia (Phase 6).
-    alert("Daftar Atau Login Akun terlebih dahulu untuk mengirim inquiry.");
-    router.push("/login");
-    return;
+    // Check if buyer is logged in
+    if (!session || !session.user) {
+      setModalState({
+        isOpen: true,
+        title: 'Daftar Atau Login Akun',
+        description: t("loginGate"),
+        type: 'warning',
+        onConfirm: () => router.push('/login'),
+      });
+      return;
+    }
+
+    // Logged in -> Submit inquiry to database
+    try {
+      const res = await fetch('/api/inquiry/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nama, email, perusahaan, produk, qty, pesan }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Gagal mengirim inquiry');
+
+      setModalState({
+        isOpen: true,
+        title: 'Inquiry Berhasil Dikirim!',
+        description: `Pesan inquiry Anda berhasil dikirim dan tersimpan di database dengan nomor ${result.inquiryNumber}. Tim kami akan segera merespons.`,
+        type: 'success',
+        onConfirm: () => {
+          form.reset();
+        },
+      });
+    } catch (err: any) {
+      setModalState({
+        isOpen: true,
+        title: 'Pengiriman Gagal',
+        description: err.message || 'Terjadi kesalahan pada server.',
+        type: 'error',
+      });
+    }
   }
 
   return (
     <div className="relative">
+      <PopupModal
+        isOpen={modalState.isOpen}
+        onClose={() => {
+          const fn = modalState.onConfirm;
+          setModalState((prev) => ({ ...prev, isOpen: false }));
+          if (fn) fn();
+        }}
+        title={modalState.title}
+        description={modalState.description}
+        type={modalState.type}
+        confirmLabel="Tutup"
+      />
+
       <form
         onSubmit={handleSubmit}
         className="grid gap-5 sm:grid-cols-2"
         noValidate
       >
         {/* Nama */}
-        <Field label="Nama Lengkap" htmlFor="nama" required error={errors.nama}>
+        <Field label={t("name")} htmlFor="nama" required error={errors.nama}>
           <Input
             id="nama"
             name="nama"
-            placeholder="Ahmad Fauzi"
+            placeholder={t("namePlaceholder")}
+            defaultValue={mounted ? (session?.user?.name || '') : ''}
             className="bg-surface/50"
             aria-invalid={!!errors.nama}
           />
         </Field>
 
         {/* Email */}
-        <Field label="Email" htmlFor="email" required error={errors.email}>
+        <Field label={t("email")} htmlFor="email" required error={errors.email}>
           <Input
             id="email"
             name="email"
             type="email"
-            placeholder="buyer@perusahaan.com"
+            placeholder={t("emailPlaceholder")}
+            defaultValue={mounted ? (session?.user?.email || '') : ''}
             className="bg-surface/50"
             aria-invalid={!!errors.email}
           />
@@ -108,7 +169,7 @@ export function InquiryForm() {
 
         {/* Perusahaan */}
         <Field
-          label="Perusahaan"
+          label={t("company")}
           htmlFor="perusahaan"
           required
           error={errors.perusahaan}
@@ -116,37 +177,40 @@ export function InquiryForm() {
           <Input
             id="perusahaan"
             name="perusahaan"
-            placeholder="PT. Contoh Internasional"
+            placeholder={t("companyPlaceholder")}
             className="bg-surface/50"
             aria-invalid={!!errors.perusahaan}
           />
         </Field>
 
         {/* Produk */}
-        <Field label="Produk" htmlFor="produk" required error={errors.produk}>
+        <Field label={t("product")} htmlFor="produk" required error={errors.produk}>
           <Select name="produk">
             <SelectTrigger id="produk" className="bg-surface/50 w-full">
-              <SelectValue placeholder="Pilih produk" />
+              <SelectValue placeholder={t("productPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
-              {PRODUCTS.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                </SelectItem>
-              ))}
+              {PRODUCTS.map((p) => {
+                const key = p.id === "shisha" ? "shisha" : p.id === "bbq" ? "bbq" : "quick";
+                return (
+                  <SelectItem key={p.id} value={p.id}>
+                    {tp(`${key}.name`)}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </Field>
 
         {/* Qty */}
-        <Field label="Qty (kg)" htmlFor="qty" error={errors.qty}>
+        <Field label={t("qty")} htmlFor="qty" error={errors.qty}>
           <Input
             id="qty"
             name="qty"
             type="number"
             inputMode="numeric"
             min="1"
-            placeholder="Misal: 1000"
+            placeholder={t("qtyPlaceholder")}
             className="bg-surface/50"
             aria-invalid={!!errors.qty}
           />
@@ -154,7 +218,7 @@ export function InquiryForm() {
 
         {/* Pesan */}
         <Field
-          label="Pesan / Kebutuhan Khusus"
+          label={t("message")}
           htmlFor="pesan"
           className="sm:col-span-2"
           error={errors.pesan}
@@ -163,16 +227,15 @@ export function InquiryForm() {
             id="pesan"
             name="pesan"
             rows={5}
-            placeholder="Ceritakan kebutuhan Anda: volume, target negara, packaging spesial, dll."
+            placeholder={t("messagePlaceholder")}
             className="bg-surface/50 resize-none"
             aria-invalid={!!errors.pesan}
           />
         </Field>
 
-        {/* Honeypot — bot mengisi field tersembunyi ini. Tanpa value/onChange
-            (uncontrolled) supaya FormData benar-benar membaca DOM. */}
+        {/* Honeypot */}
         <div className="hidden" aria-hidden="true">
-          <Label htmlFor="website">Website</Label>
+          <Label htmlFor="website">{t("honeypotWebsite")}</Label>
           <Input
             id="website"
             name="website"
@@ -188,7 +251,7 @@ export function InquiryForm() {
             className="w-full bg-accent text-white transition-all hover:bg-accent-dark sm:w-auto"
           >
             <Send className="mr-2 h-4 w-4" aria-hidden="true" />
-            Kirim Inquiry
+            {t("submit")}
           </Button>
         </div>
       </form>
@@ -196,7 +259,6 @@ export function InquiryForm() {
   );
 }
 
-/** Field — wrapper label + input + error message. */
 function Field({
   label,
   htmlFor,
