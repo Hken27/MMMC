@@ -16,13 +16,18 @@ model User {
   id                String   @id @default(cuid())
   email             String   @unique
   username          String   @unique
-  passwordHash      String
+  passwordHash      String?  // Nullable for OAuth-only accounts
   role              UserRole @default(BUYER)
 
   // Verification status
   verified          Boolean  @default(false)
   whatsappVerified  Boolean  @default(false)
   emailVerified     Boolean  @default(false)
+
+  // OAuth / Social Login
+  socialProvider    SocialProvider? // GOOGLE, APPLE, null for email/password
+  oauthId           String?  @unique // Provider-specific user ID
+  avatar            String?  // Avatar URL from OAuth provider
 
   // Security & Lockout
   failedLoginAttempts Int    @default(0)
@@ -43,6 +48,12 @@ model User {
 
   @@index([role])
   @@index([verified])
+  @@index([socialProvider])
+}
+
+enum SocialProvider {
+  GOOGLE
+  APPLE
 }
 
 enum UserRole {
@@ -177,4 +188,102 @@ model AuditLog {
 
   @@index([adminId])
   @@index([createdAt])
+}
+
+// ====== GEOGRAPHIC DATA (PlaceDB) ======
+
+model Country {
+  id                String   @id @default(cuid())
+  code              String   @unique // ISO 3166-1 alpha-2 (e.g., "ID", "US")
+  name              String   @unique
+  dial              String?  // International dialing code (e.g., "+62")
+
+  // Relations
+  states            State[]
+  cities            City[]
+  districts         District[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([code])
+}
+
+model State {
+  id                String   @id @default(cuid())
+  code              String   // State/Province code (e.g., "JK", "CA")
+  name              String
+  countryId         String
+  country           Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  // Relations
+  cities            City[]
+  districts         District[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([countryId, code])
+  @@index([countryId])
+}
+
+model City {
+  id                String   @id @default(cuid())
+  name              String
+  countryId         String
+  country           Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  stateId           String?  // Nullable for countries without states
+  state             State?   @relation(fields: [stateId], references: [id], onDelete: Cascade)
+
+  // Relations
+  districts         District[]
+  postalCodes       PostalCode[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([countryId, stateId, name])
+  @@index([countryId])
+  @@index([stateId])
+}
+
+model District {
+  id                String   @id @default(cuid())
+  name              String
+  countryId         String
+  country           Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  stateId           String?
+  state             State?   @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  cityId            String
+  city              City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  // Relations
+  postalCodes       PostalCode[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([cityId, name])
+  @@index([countryId])
+  @@index([stateId])
+  @@index([cityId])
+}
+
+model PostalCode {
+  id                String   @id @default(cuid())
+  code              String
+  countryId         String
+  country           Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  cityId            String?
+  city              City?    @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  districtId        String?
+  district          District? @relation(fields: [districtId], references: [id], onDelete: Cascade)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([countryId, code])
+  @@index([countryId])
+  @@index([cityId])
+  @@index([districtId])
 }

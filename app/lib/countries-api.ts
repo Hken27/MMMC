@@ -2,6 +2,30 @@
  * Fetch worldwide countries dari restcountries.com (free API)
  * Format: { code, name, dial }
  */
+
+const FALLBACK_COUNTRIES = [
+  { code: 'ID', name: 'Indonesia', dial: '+62' },
+  { code: 'SG', name: 'Singapore', dial: '+65' },
+  { code: 'MY', name: 'Malaysia', dial: '+60' },
+  { code: 'TH', name: 'Thailand', dial: '+66' },
+  { code: 'PH', name: 'Philippines', dial: '+63' },
+  { code: 'VN', name: 'Vietnam', dial: '+84' },
+  { code: 'US', name: 'United States', dial: '+1' },
+  { code: 'CN', name: 'China', dial: '+86' },
+  { code: 'JP', name: 'Japan', dial: '+81' },
+  { code: 'KR', name: 'South Korea', dial: '+82' },
+  { code: 'AE', name: 'United Arab Emirates', dial: '+971' },
+  { code: 'SA', name: 'Saudi Arabia', dial: '+966' },
+  { code: 'GB', name: 'United Kingdom', dial: '+44' },
+  { code: 'DE', name: 'Germany', dial: '+49' },
+  { code: 'FR', name: 'France', dial: '+33' },
+  { code: 'AU', name: 'Australia', dial: '+61' },
+  { code: 'NZ', name: 'New Zealand', dial: '+64' },
+  { code: 'IN', name: 'India', dial: '+91' },
+  { code: 'BR', name: 'Brazil', dial: '+55' },
+  { code: 'MX', name: 'Mexico', dial: '+52' },
+];
+
 export async function getWorldwideCountries() {
   try {
     const res = await fetch('https://restcountries.com/v3.1/all');
@@ -17,8 +41,8 @@ export async function getWorldwideCountries() {
       }))
       .sort((a: any, b: any) => a.name.localeCompare(b.name));
   } catch (err) {
-    console.error('Error fetching countries:', err);
-    return [];
+    console.warn('Error fetching countries from API, using fallback:', err);
+    return FALLBACK_COUNTRIES;
   }
 }
 

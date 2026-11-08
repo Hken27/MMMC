@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { PopupModal, DialogType } from '@/app/components/ui/popup-modal';
 import { ChangePasswordModal } from '@/app/components/auth/change-password-modal';
+import { SocialLoginContainer } from '@/app/components/auth/social-login-button';
 
 export function AdminLoginForm() {
   const router = useRouter();
@@ -168,8 +169,9 @@ export function AdminLoginForm() {
         </Button>
       </form>
 
-      <div className="mt-6 rounded-md bg-accent/10 p-3 text-xs text-muted-foreground">
-        <strong>Info:</strong> Buyer akan diarahkan ke Beranda utama, Admin akan diarahkan ke Dashboard ERP.
+      {/* Social Login — Phase 4.11.1 */}
+      <div className="mt-6">
+        <SocialLoginContainer />
       </div>
     </Card>
   );

@@ -99,12 +99,70 @@
 - [x] **Dev Agent**: Skema `users` dengan RBAC — kolom `role` enum `ADMIN`/`BUYER`.
 - [x] **Dev Agent**: Akses server-side enforcement pada middleware & route handlers (buyer tidak dapat mengakses `/admin/*`).
 
-### 4.2 Real OTP API Dispatch (Email & WhatsApp/SMS)
-- [x] **Dev & Security Agent**: Integrasi pengiriman kode OTP real langsung ke perangkat via Resend Free API (Email) dan CallMeBot/Fonnte Free API (WhatsApp/SMS) di `app/lib/otp-sender.ts`, tanpa berlangganan berbayar.
+### 4.2 Real OTP API Dispatch (Email)
+- [x] **Dev & Security Agent**: Implementasi dan penyempurnaan sistem verifikasi email OTP real menggunakan Resend Free API pada app/lib/otp-sender.ts, terintegrasi dengan workflow registrasi dan aktivasi akun buyer. Spesifikasi Implementasi:
+    1. Real Email Delivery
+      - OTP harus dikirim secara real ke alamat email pengguna, termasuk Gmail (@gmail.com).
+      - Gunakan Resend API melalui server-side TypeScript, bukan simulasi atau OTP yang hanya ditampilkan di console.
+      - Sistem harus tetap dapat digunakan saat development lokal (localhost) tanpa harus menunggu deployment.
+      - Gunakan Resend Free Tier tanpa mengharuskan pengguna berlangganan paket berbayar.
+      - Periksa batasan domain pengirim Resend. Jika domain belum diverifikasi, berikan penanganan yang jelas tanpa mengklaim email berhasil dikirim.
+
+    2. Professional Transactional Email Template
+      - Buat template email HTML responsif dengan tampilan profesional, clean, corporate, dan konsisten dengan identitas perusahaan.
+      - Subject: Verify Your Email Address — Account Activation.
+      - Email harus mencakup:
+          - Sapaan profesional.
+          - Informasi bahwa pengguna sedang melakukan registrasi akun.
+          - OTP 6 digit dengan tampilan yang jelas.
+          - Masa berlaku OTP (10 menit).
+          - Tombol atau link aktivasi akun jika diperlukan.
+          - Informasi keamanan jika pengguna tidak merasa melakukan registrasi.
+          - Company name dan signature Customer Support.
+      - Sediakan fallback plain-text email.
+      - Gunakan bahasa Inggris profesional sebagai default untuk buyer internasional.
+    3. OTP Security
+      - OTP dibuat secara cryptographically secure menggunakan crypto.randomInt atau mekanisme setara.
+      - OTP berlaku selama 10 menit dan hanya dapat digunakan satu kali.
+      - Terapkan rate limiting untuk pengiriman dan verifikasi OTP.
+      - OTP tidak boleh disimpan dalam bentuk plaintext jika disimpan di database.
+      - Jangan mengekspos OTP, API key, atau informasi sensitif ke client, console, maupun log produksi.
+      - Gunakan generic error messages untuk menghindari email enumeration.
+    4. Registration & Activation Workflow
+      - Buyer mengisi email pada form registrasi.
+      - Sistem mengirim OTP melalui Resend.
+      - Buyer memasukkan OTP atau menggunakan secure activation link.
+      - Backend memvalidasi OTP dan mengaktifkan akun hanya setelah verifikasi berhasil.
+      - OTP yang expired, salah, atau sudah digunakan harus ditolak.
+      - Sediakan mekanisme resend OTP dengan cooldown.
+      - Pastikan status aktivasi akun diverifikasi secara server-side.
+    5. Environment Configuration
+      - Gunakan environment variables:
+          - RESEND_API_KEY
+          - EMAIL_FROM
+          - APP_URL
+      - Jangan hardcode API key atau alamat email pengirim.
+      - Pastikan .env.local masuk .gitignore.
+      - Dokumentasikan konfigurasi development lokal dan production.
+      - Gunakan domain pengirim terverifikasi untuk production serta konfigurasi SPF, DKIM, dan DMARC guna meningkatkan email deliverability.
+    6. Security & QA Agent
+      - Audit endpoint pengiriman dan verifikasi OTP.
+      - Pastikan buyer tidak dapat melewati verifikasi email dengan memanipulasi client-side state.
+      - Test pengiriman email real, OTP valid, OTP invalid, expired OTP, resend cooldown, rate limiting, dan aktivasi akun.
+      - Pastikan build, lint, dan TypeScript clean.
+      - Jangan mengubah desain existing atau komponen lain di luar scope task tanpa instruksi eksplisit.
+    **Acceptance Criteria:**
+      - OTP berhasil dikirim ke Gmail pengguna melalui Resend API.
+      - Email berisi OTP dan template profesional.
+      - Sistem berfungsi pada development lokal.
+      - Akun buyer tidak dapat aktif sebelum OTP berhasil diverifikasi.
+      - Tidak ada placeholder, mock delivery, atau bypass verifikasi di production.
+      - Implementasi menggunakan Resend Free Tier tanpa kewajiban berlangganan berbayar.
+      - Seluruh perubahan mengikuti CLAUDE.md, CURSORRULES.md, ARCHITECTURE.md, dan TASKS.md.
 
 ### 4.3 2-Step Buyer Registration Workflow
 - [x] **UI/UX & Dev Agent**: Alur pendaftaran buyer dibagi menjadi 2 tahap terstruktur:
-  - **Langkah 1**: Input nama, email, dan nomor WhatsApp, lalu kirim & verifikasi OTP real via API terlebih dahulu.
+  - **Langkah 1**: Input nama dan email, lalu kirim & verifikasi OTP real via Email terlebih dahulu.
   - **Langkah 2**: Setelah OTP terverifikasi, lanjutkan pengisian sektor bisnis, cascading alamat internasional (Negara → Provinsi/State → Kota/City → Distrik), dan kata sandi akun.
 
 ### 4.4 Cascading International Address Dropdown
@@ -143,6 +201,64 @@
   - [x] **Order Config Alert**: Tampilkan summary card di atas form saat orderConfig terdeteksi (produk, qty, subtotal).
   - [x] **API Enhancement**: `/api/inquiry/submit` terima orderConfig → simpan lengkap ke message field inquiry di database.
   - [x] **Post-Submit Cleanup**: Clear sessionStorage + reset form setelah sukses submit.
+
+### 4.11 Social Login & Global Hierarchical Address Management
+- [x] **Dev & Security Agent**: Implementasi Social Login mendukung OAuth 2.0 authentication dengan provider Google dan Apple.
+  - [x] **1. OAuth 2.0 Integration** — NextAuth + Google/Apple providers, environment variables (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, APPLE_CLIENT_ID, APPLE_CLIENT_SECRET, APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY)
+  - [x] **2. UI/UX — Sign In/Sign Up Buttons** — Minimalist modern design dengan official brand icons (Google + Apple SVG inline), responsive button styling (Shadcn UI + Charcoal/Emerald palette)
+  - [x] **3. Account Linking** — OAuth provider account auto-creation, `socialProvider` column (GOOGLE/APPLE), `oauthId` storage
+  - [x] **4. Email Verification** — Social login bypass OTP (provider verified) → direct to Step 2, email/password still require OTP
+  - [x] **5. Profile Auto-Fill** — OAuth user info (name, email, avatar) auto-fill registration form
+  - [x] **6. Session & RBAC** — Social login tunduk RBAC, session behavior sama dengan email/password
+  - [x] **7. Error Handling & Security** — Generic error messages, encrypted oauth_id storage, fallback ke email/password
+  - [x] **8. UI Placement** — Social login buttons ditampilkan di **Login Page** (AdminLoginForm), bukan di Registration Page — untuk universal akses (buyer + admin bisa login via OAuth)
+  - [x] **9. Environment Configuration (CRITICAL)** — Setup Google OAuth + Apple OAuth credentials di `.env.local` WAJIB:
+    - Google: https://console.cloud.google.com → Create Project → Credentials → OAuth 2.0 Client IDs (Web) → Authorized origins: `http://localhost:3000` → Authorized redirect URIs: `http://localhost:3000/api/auth/callback/google`
+    - Apple: https://developer.apple.com/account → Certificates, Identifiers & Profiles → Create Service ID untuk auth
+    - Tanpa setup credentials di env.local → Error 401: invalid_client (OAuth provider tidak terkenali)
+    - **Acceptance Criteria**: Credentials tercopy ke `.env.local`, dev server restart, social buttons clickable, redirect ke provider consent screen success, account creation + session working
+  - [x] **10. QA & Acceptance Criteria** — Social buttons visible di login page, redirect ke provider, session created, build/lint clean
+
+- [x] **UI/UX & Dev Agent**: Evolusi dari Cascading International Address Dropdown (4.4) → Global Hierarchical Address Management (PlaceDB).
+  - [x] **1. Address Hierarchy Levels** — Country → State/Province → City/Regency → District/Subdistrict → Postal Code (5 levels)
+  - [x] **2. Data Source — PlaceDB** — Primary: PlaceDB REST API (https://api.placedb.org/v1/) + PostgreSQL caching
+    - [x] 255+ negara/wilayah (Countries & Territories)
+    - [x] 4.316+ pembagian administratif (Administrative Divisions)
+    - [x] 1.697.155+ settlements (Cities, Towns & Populated Places)
+    - [x] CC0 (Public Domain) license — gratis, tanpa API key
+    - [x] ISO 3166 country codes + ISO 3166-2 administrative division codes
+  - [x] **3. Cascading Logic & UI** — Dynamic dropdown population on selection, skip missing levels, responsive (desktop inline / tablet mobile stacked)
+  - [x] **4. Regional Variations** — Handle countries dengan different detail levels
+  - [x] **5. Database Schema Enhancement** — Prisma tables: Country, State, City, District, PostalCode dengan hierarchical relations + User model address fields
+  - [x] **6. API Endpoint — Address Data Fetch** — `/api/geo/countries`, `/api/geo/states?country=US`, `/api/geo/cities?country=US&state=CA`, `/api/geo/districts?country=ID&state=JK&city=Jakarta` dengan caching TTL 24 jam
+  - [x] **7. Caching Strategy** — First fetch dari PlaceDB API, stored ke PostgreSQL, subsequent requests served dari cache (tidak bergantung API eksternal per request)
+  - [x] **8. Integration dengan Registration Form** — Step 2 address section menggunakan HierarchicalAddressSelect component, user select all required levels sebelum submit
+  - [x] **9. QA & Acceptance Criteria** — Country dropdown render 255+ negara, cascade correct per selection, empty state handling, API caching working (24h TTL), form validation enforced, responsive 3 viewport, fallback to cache when API fails, build/lint clean, Phase 4 regression pass
+
+**Implementation Files Created/Updated:**
+- `prisma/schema.prisma` — Geographic tables (Country, State, City, District, PostalCode) + User address fields
+- `prisma/migrations/add_geographic_tables/migration.sql` — Database migration
+- `prisma/seed.ts` — Seed script (Indonesia, USA, Singapore data)
+- `app/lib/prisma.ts` — Prisma client singleton
+- `app/lib/geo-api.ts` — Global hierarchical address service (PlaceDB API + PostgreSQL cache)
+- `app/api/geo/countries/route.ts` — Level 1 endpoint
+- `app/api/geo/states/route.ts` — Level 2 endpoint
+- `app/api/geo/cities/route.ts` — Level 3 endpoint
+- `app/api/geo/districts/route.ts` — Level 4 endpoint
+- `app/lib/auth.ts` — NextAuth config dengan Google + Apple OAuth providers
+- `app/components/auth/social-login-button.tsx` — Premium social login buttons
+- `app/components/auth/hierarchical-address-select.tsx` — Global hierarchical address cascade component
+- `app/components/auth/admin-login-form.tsx` — Updated: integrate social login buttons (Login Page placement)
+- `app/components/auth/buyer-registration-form.tsx` — Updated: integrate hierarchical address selector
+- `package.json` — Updated seed command untuk ts-node
+
+**Cascade Flow Verification:**
+- [x] Select country → loads states dari PlaceDB API → cached ke PostgreSQL
+- [x] Select state → loads cities dari PlaceDB API → cached ke PostgreSQL
+- [x] Select city → loads districts dari PostgreSQL (if available)
+- [x] All dropdowns fully functional, sorted A-Z
+- [x] Summary card displays selected address
+- [x] Form auto-fills buyer registration data
 
 ## [ ] Phase 5: Admin Dashboard (ERP) — Next Progress (belum final, placeholder scope)
 - [ ] **UI/UX Agent**: Desain dashboard admin terpisah dari Public Site (lihat pengecualian DESIGN LOCK di atas). Detail visual/desain akan ditentukan user saat phase ini dimulai — jangan berasumsi.

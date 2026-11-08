@@ -86,17 +86,15 @@ export function ProductOrder({ products }: { products: Product[] }) {
       subtotal: subtotal,
     };
 
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("orderConfig", JSON.stringify(orderConfig));
+    sessionStorage.setItem("orderConfig", JSON.stringify(orderConfig));
 
-      // Dispatch custom event untuk notify InquiryForm
-      window.dispatchEvent(new CustomEvent("orderConfigUpdated", { detail: orderConfig }));
+    // Dispatch custom event untuk notify InquiryForm
+    window.dispatchEvent(new CustomEvent("orderConfigUpdated", { detail: orderConfig }));
 
-      // Scroll ke inquiry form
-      const inquirySection = document.getElementById("kontak");
-      if (inquirySection) {
-        inquirySection.scrollIntoView({ behavior: "smooth" });
-      }
+    // Scroll ke inquiry form
+    const inquirySection = document.getElementById("kontak");
+    if (inquirySection) {
+      inquirySection.scrollIntoView({ behavior: "smooth" });
     }
   }
 

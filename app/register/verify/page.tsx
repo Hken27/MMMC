@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ShieldCheck, Mail, Phone, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { Mail, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -61,7 +61,7 @@ function VerifyContent() {
           router.push('/login');
         }}
         title="Pendaftaran & Verifikasi Berhasil!"
-        description={`Akun Anda telah aktif sepenuhnya. Pesan konfirmasi beserta Username (${username}) dan Password Anda telah dikirimkan ke ${type === 'email' ? 'Email' : 'No. WhatsApp'} Anda (${identifier}). Silakan masuk untuk mulai memesan.`}
+        description={`Akun Anda telah aktif sepenuhnya. Pesan konfirmasi beserta Username (${username}) dan Password Anda telah dikirimkan ke Email Anda (${identifier}). Silakan masuk untuk mulai memesan.`}
         type="success"
         confirmLabel="Lanjut ke Halaman Masuk"
       />
@@ -69,9 +69,9 @@ function VerifyContent() {
       <Card className="w-full max-w-md p-6 sm:p-8 shadow-xl border-border/50">
         <div className="text-center mb-6">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-accent mb-3">
-            {type === 'email' ? <Mail className="h-6 w-6" /> : <Phone className="h-6 w-6" />}
+            <Mail className="h-6 w-6" />
           </div>
-          <h1 className="text-xl font-bold text-foreground">Verifikasi {type === 'email' ? 'Email' : 'No. WhatsApp'}</h1>
+          <h1 className="text-xl font-bold text-foreground">Verifikasi Email</h1>
           <p className="text-xs text-muted-foreground mt-1">
             Masukkan kode OTP 6 digit yang telah dikirim ke <span className="font-semibold text-foreground">{identifier || 'tujuan Anda'}</span>.
           </p>

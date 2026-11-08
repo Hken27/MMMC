@@ -98,7 +98,7 @@ export function NavbarClient({ navLinks }: { navLinks: NavLink[] }) {
                 aria-expanded={profileOpen}
               >
                 <User className="h-4 w-4" />
-                <span className="hidden sm:inline">{session?.user?.username || session?.user?.name || session?.user?.email || 'Pengguna'}</span>
+                <span className="hidden sm:inline">{session?.user?.name || session?.user?.email || 'Pengguna'}</span>
               </button>
 
               <AnimatePresence>

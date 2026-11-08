@@ -1,137 +1,225 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database...');
+  console.log('Seeding PlaceDB geographic data...');
 
-  // Business sectors list
-  const businessSectors = [
-    'Retail',
-    'Restaurant & Cafe',
-    'Hotel & Hospitality',
-    'Industrial',
-    'Manufacturing',
-    'Agriculture',
-    'Export/Import',
-    'Catering',
-    'Other',
-  ];
-
-  console.log(`📋 Business sectors: ${businessSectors.join(', ')}`);
-
-  // ====== Admin Bootstrap User ======
-  const adminUsername = process.env.ADMIN_BOOTSTRAP_USERNAME || 'admin';
-  const adminPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD || 'admin1234';
-  const adminEmail = process.env.ADMIN_BOOTSTRAP_EMAIL || 'admin@cmmm.local';
-
-  if (!adminUsername || !adminPassword || !adminEmail) {
-    throw new Error('❌ Admin bootstrap credentials not set in .env.local');
-  }
-
-  const adminPasswordHash = await bcrypt.hash(adminPassword, 10);
-
-  const existingAdmin = await prisma.user.findUnique({
-    where: { username: adminUsername },
+  // ===== INDONESIA =====
+  const idCountry = await prisma.country.upsert({
+    where: { code: 'ID' },
+    update: {},
+    create: {
+      code: 'ID',
+      name: 'Indonesia',
+      dial: '+62',
+    },
   });
 
-  if (existingAdmin) {
-    console.log(`✅ Admin user "${adminUsername}" already exists, skipping...`);
-  } else {
-    const admin = await prisma.user.create({
-      data: {
-        email: adminEmail,
-        username: adminUsername,
-        passwordHash: adminPasswordHash,
-        role: 'ADMIN',
-        verified: true,
-        emailVerified: true,
-        whatsappVerified: true,
-      },
-    });
-    console.log(`✅ Admin user created: ${admin.username} (${admin.email})`);
-  }
+  console.log('Created/Updated Indonesia');
 
-  // ====== Dummy Buyer Users (for testing) ======
-  const dummyBuyers = [
-    {
-      email: 'buyer1@example.com',
-      username: 'buyer_1',
-      fullName: 'John Doe',
-      whatsapp: '+6281234567890',
-      businessSector: 'Restaurant & Cafe',
-      city: 'Jakarta',
-      country: 'ID',
-    },
-    {
-      email: 'buyer2@example.com',
-      username: 'buyer_2',
-      fullName: 'Jane Smith',
-      whatsapp: '+6289876543210',
-      businessSector: 'Catering',
-      city: 'Surabaya',
-      country: 'ID',
-    },
+  // Indonesia States
+  const idStates = [
+    { code: 'AC', name: 'Aceh' },
+    { code: 'SU', name: 'Sumatera Utara' },
+    { code: 'SB', name: 'Sumatera Barat' },
+    { code: 'RO', name: 'Riau' },
+    { code: 'JA', name: 'Jambi' },
+    { code: 'SL', name: 'Sumatera Selatan' },
+    { code: 'KB', name: 'Kepulauan Bangka Belitung' },
+    { code: 'LA', name: 'Lampung' },
+    { code: 'JK', name: 'Jakarta' },
+    { code: 'JB', name: 'Jawa Barat' },
+    { code: 'JT', name: 'Jawa Tengah' },
+    { code: 'YO', name: 'Yogyakarta' },
+    { code: 'JI', name: 'Jawa Timur' },
+    { code: 'BT', name: 'Banten' },
+    { code: 'BA', name: 'Bali' },
+    { code: 'NB', name: 'Nusa Tenggara Barat' },
+    { code: 'NT', name: 'Nusa Tenggara Timur' },
+    { code: 'KB2', name: 'Kalimantan Barat' },
+    { code: 'KT', name: 'Kalimantan Tengah' },
+    { code: 'KS', name: 'Kalimantan Selatan' },
+    { code: 'KI', name: 'Kalimantan Timur' },
+    { code: 'KU', name: 'Kalimantan Utara' },
+    { code: 'SA', name: 'Sulawesi Utara' },
+    { code: 'ST', name: 'Sulawesi Tengah' },
+    { code: 'SG', name: 'Sulawesi Selatan' },
+    { code: 'SB2', name: 'Sulawesi Barat' },
+    { code: 'SR', name: 'Sulawesi Tenggara' },
+    { code: 'MA', name: 'Maluku' },
+    { code: 'MU', name: 'Maluku Utara' },
+    { code: 'PA', name: 'Papua' },
+    { code: 'PB', name: 'Papua Barat' },
   ];
 
-  for (const buyerData of dummyBuyers) {
-    const existingBuyer = await prisma.user.findUnique({
-      where: { username: buyerData.username },
-    });
+  const stateMap: { [key: string]: string } = {};
 
-    if (existingBuyer) {
-      console.log(`⏭️  Buyer "${buyerData.username}" already exists, skipping...`);
-      continue;
-    }
-
-    const passwordHash = await bcrypt.hash('buyer1234', 10);
-    const buyer = await prisma.user.create({
-      data: {
-        email: buyerData.email,
-        username: buyerData.username,
-        passwordHash,
-        role: 'BUYER',
-        verified: true,
-        emailVerified: true,
-        whatsappVerified: true,
-        profile: {
-          create: {
-            fullName: buyerData.fullName,
-            whatsapp: buyerData.whatsapp,
-            businessSector: buyerData.businessSector,
-            street: 'Jl. Example No. 123',
-            subdistrict: 'Kelurahan Test',
-            district: 'Kecamatan Test',
-            city: buyerData.city,
-            province: 'Test Province',
-            country: buyerData.country,
-            postalCode: '12345',
-          },
+  for (const state of idStates) {
+    const createdState = await prisma.state.upsert({
+      where: {
+        countryId_code: {
+          countryId: idCountry.id,
+          code: state.code,
         },
       },
+      update: {},
+      create: {
+        code: state.code,
+        name: state.name,
+        countryId: idCountry.id,
+      },
     });
-
-    console.log(`✅ Dummy buyer created: ${buyer.username} (${buyer.email})`);
+    stateMap[state.code] = createdState.id;
   }
 
-  console.log('\n✨ Seeding complete!');
-  console.log('\n⚠️  NOTE: Dummy data is for dev/staging only. Do NOT seed to production.');
-  console.log(`\n🔐 Admin credentials (dev/staging only):`);
-  console.log(`   Username: ${adminUsername}`);
-  console.log(`   Password: ${adminPassword}`);
-  console.log(`   Email: ${adminEmail}`);
-  console.log(`\n📝 Dummy buyer credentials (for testing):`);
-  dummyBuyers.forEach((b) => {
-    console.log(`   Username: ${b.username}, Password: buyer1234`);
+  console.log('Created/Updated Indonesia states');
+
+  // Jakarta cities & districts
+  const jakartaState = stateMap['JK'];
+  const jakartaCity = await prisma.city.upsert({
+    where: {
+      countryId_stateId_name: {
+        countryId: idCountry.id,
+        stateId: jakartaState,
+        name: 'Jakarta',
+      },
+    },
+    update: {},
+    create: {
+      name: 'Jakarta',
+      countryId: idCountry.id,
+      stateId: jakartaState,
+    },
   });
+
+  const jakartaDistricts = [
+    'Central Jakarta',
+    'North Jakarta',
+    'East Jakarta',
+    'South Jakarta',
+    'West Jakarta',
+  ];
+
+  for (const district of jakartaDistricts) {
+    await prisma.district.upsert({
+      where: {
+        cityId_name: {
+          cityId: jakartaCity.id,
+          name: district,
+        },
+      },
+      update: {},
+      create: {
+        name: district,
+        countryId: idCountry.id,
+        stateId: jakartaState,
+        cityId: jakartaCity.id,
+      },
+    });
+  }
+
+  console.log('Created/Updated Jakarta cities & districts');
+
+  // ===== UNITED STATES =====
+  const usCountry = await prisma.country.upsert({
+    where: { code: 'US' },
+    update: {},
+    create: {
+      code: 'US',
+      name: 'United States',
+      dial: '+1',
+    },
+  });
+
+  const usStates = [
+    { code: 'CA', name: 'California' },
+    { code: 'TX', name: 'Texas' },
+    { code: 'NY', name: 'New York' },
+    { code: 'FL', name: 'Florida' },
+    { code: 'IL', name: 'Illinois' },
+  ];
+
+  const usStateMap: { [key: string]: string } = {};
+
+  for (const state of usStates) {
+    const createdState = await prisma.state.upsert({
+      where: {
+        countryId_code: {
+          countryId: usCountry.id,
+          code: state.code,
+        },
+      },
+      update: {},
+      create: {
+        code: state.code,
+        name: state.name,
+        countryId: usCountry.id,
+      },
+    });
+    usStateMap[state.code] = createdState.id;
+  }
+
+  // California cities
+  const caCities = ['Los Angeles', 'San Francisco', 'San Diego'];
+  for (const city of caCities) {
+    await prisma.city.upsert({
+      where: {
+        countryId_stateId_name: {
+          countryId: usCountry.id,
+          stateId: usStateMap['CA'],
+          name: city,
+        },
+      },
+      update: {},
+      create: {
+        name: city,
+        countryId: usCountry.id,
+        stateId: usStateMap['CA'],
+      },
+    });
+  }
+
+  console.log('Created/Updated USA states & cities');
+
+  // ===== SINGAPORE (no states) =====
+  const sgCountry = await prisma.country.upsert({
+    where: { code: 'SG' },
+    update: {},
+    create: {
+      code: 'SG',
+      name: 'Singapore',
+      dial: '+65',
+    },
+  });
+
+  await prisma.city.upsert({
+    where: {
+      countryId_stateId_name: {
+        countryId: sgCountry.id,
+        stateId: null,
+        name: 'Singapore',
+      },
+    },
+    update: {},
+    create: {
+      name: 'Singapore',
+      countryId: sgCountry.id,
+      stateId: null,
+    },
+  });
+
+  console.log('Created/Updated Singapore');
+
+  console.log('✅ Seed complete!');
 }
 
 main()
-  .catch((e) => {
-    console.error('❌ Seeding failed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
+  .then(async () => {
     await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error('❌ Seed failed:', e);
+    await prisma.$disconnect();
+    process.exit(1);
   });

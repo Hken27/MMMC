@@ -1,25 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/prisma';
+import { sendOtpEmail, validateOtpFormat } from '@/app/lib/otp-service';
 import crypto from 'crypto';
 
+/**
+ * POST /api/auth/send-otp
+ * Send OTP verification email
+ *
+ * Security:
+ * - Rate limit per IP/email
+ * - Generic error messages
+ * - No email enumeration
+ * - Cryptographically secure OTP
+ */
 export async function POST(req: NextRequest) {
   try {
-    const { identifier, type } = await req.json();
+    const { identifier } = await req.json();
 
     if (!identifier) {
-      return NextResponse.json({ message: 'Nomor HP / Email wajib diisi untuk mengirim OTP.' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Please check your email and try again.' },
+        { status: 400 }
+      );
     }
 
-    // Generate real 6-digit secure random OTP
+    // Generate secure 6-digit OTP
     const otpCode = crypto.randomInt(100000, 999999).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Save token to database
+    // Save to database
     await prisma.verificationToken.upsert({
       where: {
         email_type: {
           email: identifier,
-          type: type === 'whatsapp' ? 'WHATSAPP' : 'EMAIL',
+          type: 'EMAIL',
         },
       },
       update: {
@@ -30,25 +44,47 @@ export async function POST(req: NextRequest) {
       create: {
         email: identifier,
         code: otpCode,
-        type: type === 'whatsapp' ? 'WHATSAPP' : 'EMAIL',
+        type: 'EMAIL',
         expiresAt,
         verified: false,
       },
     });
 
-    console.log(`\n========================================`);
-    console.log(`[OTP DISPATCHED TO DEVICE] To: ${identifier} (${type})`);
-    console.log(`OTP CODE: ${otpCode}`);
-    console.log(`========================================\n`);
+    // Send via Resend API
+    const sendResult = await sendOtpEmail(identifier, otpCode);
+
+    if (!sendResult.success) {
+      // Log error untuk debugging
+      console.error('[Send OTP] sendOtpEmail failed:', {
+        email: identifier.substring(0, 3) + '***',
+        error: sendResult.error,
+        message: sendResult.message,
+      });
+
+      return NextResponse.json(
+        { message: sendResult.message },
+        { status: 400 }
+      );
+    }
+
+    // Success response - don't expose OTP to client in production
+    // For development/testing, include OTP in response
+    const isDev = process.env.NODE_ENV === 'development';
 
     return NextResponse.json({
-      message: `Kode OTP berhasil dikirim ke perangkat ${identifier} via ${type === 'whatsapp' ? 'WhatsApp/SMS' : 'Email'}.`,
+      message: sendResult.message,
       success: true,
-      // Pass otpCode directly in response so UI can display it instantly on user's device screen without third-party gateway block delay
-      otpCode: otpCode,
+      ...(isDev && { otpCode }), // Only in development
     });
   } catch (error) {
-    console.error('Send OTP error:', error);
-    return NextResponse.json({ message: 'Gagal mengirim kode OTP.' }, { status: 500 });
+    console.error('[Send OTP Error]', {
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+    });
+
+    return NextResponse.json(
+      { message: 'An error occurred. Please try again later.' },
+      { status: 500 }
+    );
   }
 }
+

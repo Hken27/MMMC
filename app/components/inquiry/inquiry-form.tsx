@@ -81,30 +81,28 @@ export function InquiryForm() {
       })
       .catch(() => {});
 
-    // Read orderConfig dari sessionStorage
-    if (typeof window !== "undefined") {
-      const readOrderConfig = () => {
-        const saved = sessionStorage.getItem("orderConfig");
-        if (saved) {
-          try {
-            const config = JSON.parse(saved);
-            setOrderConfig(config);
-          } catch (err) {
-            // Invalid JSON, ignore
-          }
+    // Read orderConfig dari sessionStorage (hanya di client)
+    const readOrderConfig = () => {
+      const saved = sessionStorage.getItem("orderConfig");
+      if (saved) {
+        try {
+          const config = JSON.parse(saved);
+          setOrderConfig(config);
+        } catch (err) {
+          // Invalid JSON, ignore
         }
-      };
+      }
+    };
 
+    readOrderConfig();
+
+    // Listen untuk custom event dari ProductOrder
+    const handleOrderConfigUpdated = (e: Event) => {
       readOrderConfig();
+    };
 
-      // Listen untuk custom event dari ProductOrder
-      const handleOrderConfigUpdated = (e: Event) => {
-        readOrderConfig();
-      };
-
-      window.addEventListener("orderConfigUpdated", handleOrderConfigUpdated);
-      return () => window.removeEventListener("orderConfigUpdated", handleOrderConfigUpdated);
-    }
+    window.addEventListener("orderConfigUpdated", handleOrderConfigUpdated);
+    return () => window.removeEventListener("orderConfigUpdated", handleOrderConfigUpdated);
   }, []);
 
   // Separate effect untuk update form saat orderConfig berubah
